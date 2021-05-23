@@ -1,0 +1,10 @@
+body {
+    background-color: #F4F7F6;
+    font-family: 'Roboto', sans-serif;
+}
+
+.taille_input_text {
+    width : 3.5em;
+    height : 30px;
+}
+

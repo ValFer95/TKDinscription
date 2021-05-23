@@ -1,0 +1,6 @@
+/.idea/
+/venv/
+clefs.py
+notes.txt
+avancement.txt
+db.sqlite3

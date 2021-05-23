@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %}  Simulation cotisation  {% endblock %}
+
+{% block content %}
+
+    <div class="container">
+        <!-- TITRE DE LA PAGE -->
+        <div class="h2 text-center">
+            Simulateur tarif cotisation pour la saison 2021 - 2022
+        </div>
+
+        <!-- AFFICHAGE DE L'ALERTE AVEC LE MONTANT DE LA COTISAION -->
+        {% if cotis_annuelle != 0 %}
+            <!-- Affichage de la cotisation -->
+            <div class="alert alert-danger alert-dismissible fade show text-center mx-auto" role="alert" style="width:500px">
+              La cotisation annuelle pour
+                {% if reinscription == '1' %}
+                    la réinscription
+                {% else %}
+                    l'inscription
+                {% endif %}
+                pour {{ nb_personnes }}
+                {% if nb_personnes > 1 %}
+                    personnes
+                {% else %}
+                    personne
+                {% endif %}
+               dans les disciplines choisies est de <span class="fw-bold">{{ cotis_annuelle }} €.</span>
+                {% if reinscription == '1' or nb_personnes > 1 %}
+                    <br>Réductions incluses.
+                {% endif %}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endif %}
+
+        <!-- AFFICHAGE DE LA CALCULETTE DE COTISATION ANNUELLE -->
+        <form class="text-center mx-auto" action="{% url 'calcul_simul' %}" method="post" style="width:400px">
+            {% csrf_token %}
+
+            <div class="row">
+                <div class="col h6 border my-auto p-1"> Indiquer le nombre de personnes à inscrire par discipline</div>
+                <div class="col">
+                    <div>
+                      <label class="fw-bold">
+                        Réinscription
+                      </label>
+                        {{ form.reinscription|add_class:"list-unstyled" }}
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-md-4">
+                <div class="col text-start">
+
+                </div>
+                <div class="col my-auto fw-bold">
+                    Taekwondo
+                    <span class="text-danger" data-bs-toggle="tooltip" data-bs-placement="right"
+                            title="Inclus : séances de taekwondo, body taekwondo et 100% féminin si désiré">
+                        <img alt="information" src="{% static 'img/point-interrogation.png' %}" height="25" width="25"/>
+                        </span>
+                </div>
+                <div class="col my-auto fw-bold">
+                    Body Taekwondo seul
+                    <span class="text-danger" data-bs-toggle="tooltip" data-bs-placement="right"
+                            title="Séances de body taekwondo seul">
+                        <img alt="information" src="{% static 'img/point-interrogation.png' %}" height="25" width="25"/>
+                    </span>
+                </div>
+                <div class="col my-auto fw-bold">
+                    100% féminin seul
+                    <span class="text-danger" data-bs-toggle="tooltip" data-bs-placement="right"
+                            title="Séances de self-défense 100% féminin seul">
+                        <img alt="information" src="{% static 'img/point-interrogation.png' %}" height="25" width="25"/>
+                    </span>
+                </div>
+            </div>
+
+
+            <div class="row row-cols-md-4 align-items-center ">
+                <div class="col text-start fw-bold">
+                    Adulte <br><span class="small text-muted">18 ans et + </span>
+                </div>
+                <div class="col">
+                    {{ form.adultTKD|attr:"autofocus"|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
+                </div>
+                <div class="col">
+                    {{ form.adultBodyTKD|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
+                </div>
+                <div class="col">
+                    {{ form.adultFem|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
+                </div>
+            </div>
+
+            <div class="row row-cols-md-4 align-items-center">
+                <div class="col text-start fw-bold">
+                    Etudiant <br><span class="small text-muted">18 ans et + </span>
+                </div>
+                <div class="col">
+                    {{ form.etudTKD|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
+                </div>
+                <div class="col">
+                    {{ form.etudBodyTKD|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
+                </div>
+                <div class="col">
+                    {{ form.etudFem|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
+                </div>
+            </div>
+
+            <div class="row row-cols-md-4 align-items-center">
+                <div class="col text-start fw-bold">
+                    Adolescent <br><span class="small text-muted">12-17 ans</span>
+                </div>
+                <div class="col">
+                    {{ form.adoTKD|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
+                </div>
+                <div class="col">
+                    {{ form.adoBodyTKD|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
+                </div>
+                <div class="col">
+                    {{ form.adoFem|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
+                </div>
+            </div>
+
+            <div class="row row-cols-md-4 align-items-center">
+                <div class="col text-start fw-bold">
+                    Enfant <br><span class="small text-muted">6-11 ans</span>
+                </div>
+                <div class="col">
+                    {{ form.enfTKD|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
+                </div>
+                <div class="col">
+                    {{ form.enfBodyTKD|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
+                </div>
+                <div class="col">
+
+                </div>
+            </div>
+
+            <div class="row row-cols-md-4 align-items-center">
+                <div class="col text-start fw-bold">
+                    Baby <br><span class="small text-muted">3-5 ans</span>
+                </div>
+                <div class="col">
+                    {{ form.babyTKD|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
+                </div>
+                <div class="col">
+
+                </div>
+                <div class="col">
+
+                </div>
+            </div>
+
+
+            <div class="col-12 mt-3">
+                <button type="submit" class="btn btn-danger me-3">Calculer</button>
+                <a class="btn btn-danger" href="{% url 'calcul_simul' %}">Effacer</a>
+            </div>
+
+        </form>
+
+
+    </div>
+
+
+{% endblock %}
