@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 
     'cotisation.apps.CotisationConfig',
     'widget_tweaks',
+    'inscription.apps.InscriptionConfig',
 ]
 
 MIDDLEWARE = [
@@ -82,7 +83,8 @@ WSGI_APPLICATION = 'TKDadhesion.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        #'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db-inscription.sqlite3',
     }
 }
 

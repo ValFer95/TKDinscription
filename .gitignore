@@ -4,3 +4,4 @@ clefs.py
 notes.txt
 avancement.txt
 db.sqlite3
+db-inscription.sqlite3
