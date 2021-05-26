@@ -6,7 +6,8 @@ admin.site.site_url = '/accueil/'
 
 @admin.register(Saison)
 class SaisonAdmin(admin.ModelAdmin):
-    list_display = ('saison',)
+    list_display = ('saison', 'saison_actuelle')
+    list_editable = ('saison_actuelle',)
 
 
 @admin.register(Categorie)

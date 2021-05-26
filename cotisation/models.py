@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator
 
 class Saison(models.Model):
     saison = models.CharField(max_length=12, verbose_name="Saison")
+    saison_actuelle = models.BooleanField(default=False)
 
     def __str__(self):
         return self.saison
@@ -16,7 +17,7 @@ class Categorie(models.Model):
     saison = models.ForeignKey('Saison', on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.nom_catg
+        return '{} - {} à {} ans '.format(self.nom_catg, self.age_inf_catg, self.age_sup_catg)
 
 
 class Discipline(models.Model):

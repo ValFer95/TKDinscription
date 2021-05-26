@@ -4,15 +4,22 @@ from inscription.models import Adherent, Contact, Famille, Grade, CategorieComba
 @admin.register(Adherent)
 class AdherentAdmin(admin.ModelAdmin):
     list_display = ('nom_adh', 'prenom_adh','ddn', 'sexe', 'adresse', 'cp', 'ville', 'nationalite', 'numtel_adh',
-                    'email_adh', 'date_crea', 'date_last_modif')
+                    'email_adh', 'contact', 'date_crea', 'date_last_modif')
     ordering = ('nom_adh', 'prenom_adh')
+
+
+@admin.register(Contact)
+class ContactAdmin(admin.ModelAdmin):
+    list_display = ('nom_contact', 'prenom_contact','numtel_contact1', 'numtel_contact2', 'numtel_contact3',
+                    'email_contact', 'date_crea', 'date_last_modif')
+    ordering = ('nom_contact', 'prenom_contact')
 
 
 @admin.register(Grade)
 class GradeAdmin(admin.ModelAdmin):
-    list_display = ('couleur', 'grade', 'barette', 'keup')
+    list_display = ('couleur', 'keup')
     list_editable = ('keup',)
-    ordering = ('-keup', 'couleur', 'grade')
+    ordering = ('-keup',)
 
 
 @admin.register(CategorieCombat)

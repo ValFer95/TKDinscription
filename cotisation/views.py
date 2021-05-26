@@ -1,9 +1,12 @@
 from django.shortcuts import render
 from cotisation.forms import SimulCotisForm
 from cotisation.fonctions import calcul
+from cotisation.models import Saison
 
 
 def simul_cotisation(request):
+
+    saison_actuelle = Saison.objects.get(saison_actuelle=True)
 
     if request.method == 'GET':
         #print('méthode get')
@@ -17,6 +20,7 @@ def simul_cotisation(request):
         cotis_annuelle, nb_personnes, reinscription = calcul(request.POST)
 
     context = {
+        'saison_actuelle' : saison_actuelle,
         'form': form,
         'nb_personnes' : nb_personnes,
         'reinscription' : reinscription,

@@ -16,8 +16,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from cotisation import views as cotis_views
+from inscription import views as inscript_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('simulCotis/', cotis_views.simul_cotisation, name='calcul_simul'),
+    path('inscription', inscript_views.inscription, name="inscription")
 ]

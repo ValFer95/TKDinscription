@@ -11,14 +11,17 @@ class Adherent(models.Model):
 
     nom_adh = models.CharField(max_length=50, verbose_name="Nom adhérent")
     prenom_adh = models.CharField(max_length=50, verbose_name="Prénom adhérent")
-    ddn = models.DateField()
+    ddn = models.DateField(verbose_name="Date de naissance")
     sexe = models.CharField(max_length=1, choices=SEXE_CHOICES)
     adresse = models.CharField(max_length=100)
     cp = models.CharField(max_length=5, verbose_name="Code postal")
     ville = models.CharField(max_length=35)
     nationalite = models.CharField(max_length=40, verbose_name="Nationalité")
     numtel_adh = models.CharField(max_length=10, blank=True, null=True, verbose_name="Numéro téléphone")
-    email_adh = models.CharField(max_length=100, blank=True, null=True, verbose_name="E-mail")
+    #numtel_adh2 = models.RegexField(regex=r'^\+?1?\d{9,15}$', error_message=("nope"))
+    email_adh = models.EmailField(max_length=200, blank=True, null=True, verbose_name="E-mail adhérent")
+    contact = models.ForeignKey('Contact', on_delete=models.CASCADE, blank=True, null=True)
+    famille = models.ForeignKey('Famille', on_delete=models.CASCADE, blank=True, null=True)
     date_crea = models.DateTimeField(auto_now_add=True)
     date_last_modif = models.DateTimeField(auto_now=True)
 
@@ -28,8 +31,6 @@ class Adherent(models.Model):
 
 class Grade(models.Model):
     couleur = models.CharField(max_length=20)
-    grade = models.IntegerField(blank=True, null=True)
-    barette = models.IntegerField(blank=True, null=True)
     keup = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
@@ -50,7 +51,7 @@ class Contact(models.Model):
     numtel_contact1 = models.CharField(max_length=10, verbose_name="Numéro téléphone 1")
     numtel_contact2 = models.CharField(max_length=10, blank=True, null=True, verbose_name="Numéro téléphone 2")
     numtel_contact3 = models.CharField(max_length=10, blank=True, null=True, verbose_name="Numéro téléphone 3")
-    email_adh = models.CharField(max_length=100, verbose_name="E-mail")
+    email_contact = models.EmailField(max_length=200, verbose_name="E-mail contact")
     date_crea = models.DateTimeField(auto_now_add=True)
     date_last_modif = models.DateTimeField(auto_now=True)
 
@@ -58,22 +59,12 @@ class Contact(models.Model):
         return '{} {} '.format(self.nom_contact, self.prenom_contact)
 
 
-class AdhContact(models.Model):
-    adherent = models.ForeignKey('Adherent', on_delete=models.CASCADE)
-    contact = models.ForeignKey('Contact', on_delete=models.CASCADE)
-
-
 class Famille(models.Model):
-    nom_famille = models.CharField(max_length=50, verbose_name="Nom de la famille")
+    nom_famille = models.CharField(max_length=80, verbose_name="Nom de la famille")
     date_crea = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.nom_famille
-
-
-class AdhFamille(models.Model):
-    adherent = models.ForeignKey('Adherent', on_delete=models.CASCADE)
-    famille = models.ForeignKey('Famille', on_delete=models.CASCADE)
 
 
 class Adherent_Saison(models.Model):
@@ -86,8 +77,8 @@ class Adherent_Saison(models.Model):
         ('1', 'Non fournie'),
     )
 
-    certif_med = models.CharField(max_length=1, choices=CERTIF_MED_CHOICES, verbose_name="Certificat médical")
-    photo = models.CharField(max_length=1, choices=PHOTO_CHOICES)
+    certif_med = models.CharField(max_length=1, choices=CERTIF_MED_CHOICES, default=0, verbose_name="Certificat médical")
+    photo = models.CharField(max_length=1, choices=PHOTO_CHOICES, default=0)
     adherent = models.ForeignKey('Adherent', on_delete=models.CASCADE)
     grade = models.ForeignKey('Grade', on_delete=models.CASCADE)
     categorie_combat = models.ForeignKey('CategorieCombat', on_delete=models.CASCADE)
