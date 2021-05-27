@@ -12,7 +12,7 @@ class SaisonAdmin(admin.ModelAdmin):
 
 @admin.register(Categorie)
 class CategorieAdmin(admin.ModelAdmin):
-    list_display = ('nom_catg', 'age_inf_catg', 'age_sup_catg', 'ordre_affichage','saison')
+    list_display = ('nom_catg', 'etudiant', 'age_inf_catg', 'age_sup_catg', 'ordre_affichage','saison')
     list_editable = ('ordre_affichage',)
     ordering = ('ordre_affichage',)
 

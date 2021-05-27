@@ -3,8 +3,8 @@ from inscription.models import Adherent, Contact, Famille, Grade, CategorieComba
 
 @admin.register(Adherent)
 class AdherentAdmin(admin.ModelAdmin):
-    list_display = ('nom_adh', 'prenom_adh','ddn', 'sexe', 'adresse', 'cp', 'ville', 'nationalite', 'numtel_adh',
-                    'email_adh', 'contact', 'date_crea', 'date_last_modif')
+    list_display = ('nom_adh', 'prenom_adh','ddn', 'sexe', 'etudiant', 'adresse', 'cp', 'ville', 'nationalite',
+                    'numtel_adh', 'email_adh', 'contact', 'date_crea', 'date_last_modif')
     ordering = ('nom_adh', 'prenom_adh')
 
 
@@ -24,4 +24,19 @@ class GradeAdmin(admin.ModelAdmin):
 
 @admin.register(CategorieCombat)
 class CategorieCombatAdmin(admin.ModelAdmin):
-    list_display = ('nom_catg_combat', 'annee_debut')
+    list_display = ('nom_catg_combat', 'age_min', 'age_max', 'annee_debut')
+    list_editable = ('age_min', 'age_max')
+    ordering = ('age_min', 'nom_catg_combat')
+
+
+@admin.register(Adherent_Saison)
+class Adherent_SaisonAdmin(admin.ModelAdmin):
+    list_display = ('adherent', 'saison', 'categorie', 'discipline', 'certif_med', 'photo',
+                    'grade', 'categorie_combat', 'date_crea', 'date_last_modif')
+    ordering = ('adherent', 'saison')
+
+
+@admin.register(Famille)
+class FamilleAdmin(admin.ModelAdmin):
+    list_display = ('nom_famille',)
+    ordering = ('nom_famille', )
