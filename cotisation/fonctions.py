@@ -27,6 +27,41 @@ def reduc_famille(nb_personnes, reinscription, saison):
     return taux_famille
 
 
+# CALCUL DU TAUX DE REDUCTION POUR UNE PERSONNE ***
+def reduc_une_personne(reinscription, saison):
+    taux_reduc = 1
+    if reinscription == '1':  # applique une réduction pour les anciens adhérents sans condition
+        for r in TauxReduction.objects.filter(saison__saison=saison,
+                                              condition_anciens=True,
+                                              condition_reduc=None).values():
+            taux_reduc -= int(r['pourcentage_reduc']) / 100
+
+    if reinscription == '0':  # applique une réduction pour les nouveaux adhérents sans condition
+        for r in TauxReduction.objects.filter(saison__saison='2020-2021',
+                                              condition_nouveaux=True,
+                                              condition_reduc=None).values():
+            taux_reduc -= int(r['pourcentage_reduc']) / 100
+
+    return taux_reduc
+
+
+# CALCUL DE LA COTISATION POUR UNE PERSONNE SELON LA DISCIPLINE ET LA SAISON
+def tarif_calcul (code_tarif, saison, reinscription):
+    tarif = 0
+    # récupération des tarifs selon la discipline/réinscription/age
+    for i in Tarif.objects.filter(code_tarif=code_tarif, saison__saison=saison).values():
+        # print(valeurs_post['reinscription'])
+        if reinscription == '1':  # réinscription d'un ancien adhérent
+            if i['tarif_ancien']:  # tarif ancien adhérent
+                tarif = i['tarif_ancien']
+            else:  # si pas de tarif ancien proposé, on prend le tarif nouvel adhérent
+                tarif = i['tarif_nouveau']
+        else:  # nouvel adhérent
+            tarif = i['tarif_nouveau']
+
+    return tarif
+
+
 # *** CALCUL DE LA COTISATION ANNUELLE POUR LA FAMILLE ENTIERE AVEC REDUCTION ***
 def calcul(valeurs_post):
     cotis_annuelle = 0
@@ -37,39 +72,17 @@ def calcul(valeurs_post):
     # *** CALCUL DE LA COTISATION ANNUELLE POUR LA FAMILLE ENTIERE AVANT REDUCTION ***
     for val in valeurs_post:                                        # Boucle sur le formulaire pour collecter le nombre de personnes par discipline
 
-        if valeurs_post[val] and val != 'csrfmiddlewaretoken':      # valeurs_post[val] est le nombre de personne par discipline et val représente le couple age/discipline
+        if valeurs_post[val] and val != 'csrfmiddlewaretoken' and val != 'reinscription':      # valeurs_post[val] est le nombre de personne par discipline et val représente le couple age/discipline
             # print('Nb de personne:', val, valeurs_post[val])
 
             # récupération des tarifs selon la discipline/réinscription/age
-            for i in Tarif.objects.filter(code_tarif=val, saison__saison='2020-2021').values():
-                nb_personnes += int(valeurs_post[val])      # calcul le nombre de personnes de la famille
-                # print(valeurs_post['reinscription'])
-                if valeurs_post['reinscription'] == '1':    # réinscription d'un ancien adhérent
-                    if i['tarif_ancien']:                   # tarif ancien adhérent
-                        tarif = i['tarif_ancien']
-                    else:                                   # si pas de tarif ancien proposé, on prend le tarif nouvel adhérent
-                        tarif = i['tarif_nouveau']
-                else:                                      # nouvel adhérent
-                    tarif = i['tarif_nouveau']
-
-                # print('tarif : ', tarif)
-                cotis_annuelle += int(valeurs_post[val]) * tarif    # calcul de la cotisation annuelle pour toutes les personnes avant application réducs
+            tarif = tarif_calcul(val, '2020-2021', valeurs_post['reinscription'])
+            nb_personnes += int(valeurs_post[val])      # calcul le nombre de personnes de la famille
+            cotis_annuelle += int(valeurs_post[val]) * tarif    # calcul de la cotisation annuelle pour toutes les personnes avant application réducs
 
     # *** APPLICATION DES REDUCTIONS ***
     if cotis_annuelle > 0:
-        if valeurs_post['reinscription'] == '1':    # applique une réduction pour les anciens adhérents sans condition
-            for r in TauxReduction.objects.filter(saison__saison='2020-2021',
-                                                  condition_anciens=True,
-                                                  condition_reduc=None).values():
-                taux_reduc -= int(r['pourcentage_reduc']) / 100
-
-        if valeurs_post['reinscription'] == '0':    # applique une réduction pour les nouveaux adhérents sans condition
-            for r in TauxReduction.objects.filter(saison__saison='2020-2021',
-                                                  condition_nouveaux=True,
-                                                  condition_reduc=None).values():
-                taux_reduc -= int(r['pourcentage_reduc']) / 100
-
-        # print('taux_reduc special', taux_reduc)
+        taux_reduc = reduc_une_personne(valeurs_post['reinscription'], '2020-2021')
 
         if nb_personnes > 1:
             taux_famille = reduc_famille(nb_personnes, valeurs_post['reinscription'], '2020-2021')
