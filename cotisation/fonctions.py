@@ -12,6 +12,7 @@ def reduc_famille(nb_personnes, reinscription, saison):
             exclude(condition_reduc=None).aggregate(Max('condition_reduc')).values():
         nb_personnnes_reduc_max = tr
 
+
     if nb_personnes >= int(nb_personnnes_reduc_max):
         nb_personnes = nb_personnnes_reduc_max
 
@@ -37,7 +38,7 @@ def reduc_une_personne(reinscription, saison):
             taux_reduc -= int(r['pourcentage_reduc']) / 100
 
     if reinscription == '0':  # applique une réduction pour les nouveaux adhérents sans condition
-        for r in TauxReduction.objects.filter(saison__saison='2020-2021',
+        for r in TauxReduction.objects.filter(saison__saison=saison,
                                               condition_nouveaux=True,
                                               condition_reduc=None).values():
             taux_reduc -= int(r['pourcentage_reduc']) / 100
@@ -63,7 +64,7 @@ def tarif_calcul (code_tarif, saison, reinscription):
 
 
 # *** CALCUL DE LA COTISATION ANNUELLE POUR LA FAMILLE ENTIERE AVEC REDUCTION ***
-def calcul(valeurs_post):
+def calcul(valeurs_post, saison):
     cotis_annuelle = 0
     nb_personnes = 0
     taux_reduc = 1
@@ -76,16 +77,16 @@ def calcul(valeurs_post):
             # print('Nb de personne:', val, valeurs_post[val])
 
             # récupération des tarifs selon la discipline/réinscription/age
-            tarif = tarif_calcul(val, '2020-2021', valeurs_post['reinscription'])
+            tarif = tarif_calcul(val, saison, valeurs_post['reinscription'])
             nb_personnes += int(valeurs_post[val])      # calcul le nombre de personnes de la famille
             cotis_annuelle += int(valeurs_post[val]) * tarif    # calcul de la cotisation annuelle pour toutes les personnes avant application réducs
 
     # *** APPLICATION DES REDUCTIONS ***
     if cotis_annuelle > 0:
-        taux_reduc = reduc_une_personne(valeurs_post['reinscription'], '2020-2021')
+        taux_reduc = reduc_une_personne(valeurs_post['reinscription'], saison)
 
         if nb_personnes > 1:
-            taux_famille = reduc_famille(nb_personnes, valeurs_post['reinscription'], '2020-2021')
+            taux_famille = reduc_famille(nb_personnes, valeurs_post['reinscription'], saison)
             # print('taux_famille: ', taux_famille)
             taux_reduc -= int(taux_famille) / 100
 

@@ -15,9 +15,11 @@ def simul_cotisation(request):
         nb_personnes = 0
         reinscription = 0
     else :
-        #print('méthode post')
+        # print('méthode post')
         form = SimulCotisForm(request.POST)
-        cotis_annuelle, nb_personnes, reinscription = calcul(request.POST)
+        cotis_annuelle, nb_personnes, reinscription = calcul(request.POST, saison_actuelle.saison)
+
+        # print("cotis_annuelle :", cotis_annuelle)
 
     context = {
         'saison_actuelle' : saison_actuelle,

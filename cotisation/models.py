@@ -11,6 +11,7 @@ class Saison(models.Model):
 
 class Categorie(models.Model):
     nom_catg = models.CharField(max_length=15, verbose_name="Catégorie")
+    code_catg = models.CharField(max_length=6, verbose_name="Code catégorie")
     age_inf_catg = models.IntegerField(validators=[MinValueValidator(3)], verbose_name="Age plancher")
     age_sup_catg = models.IntegerField(verbose_name="Age plafond",blank=True, null=True)
     etudiant = models.BooleanField(default=0)
@@ -23,6 +24,7 @@ class Categorie(models.Model):
 
 class Discipline(models.Model):
     nom_discipl = models.CharField(max_length=20, verbose_name="Discipline")
+    code_discipl = models.CharField(max_length=10, verbose_name="Code discipline")
     ordre_affichage = models.IntegerField(blank=True, verbose_name="Ordre d'affichage")
     saison = models.ForeignKey('Saison', on_delete=models.CASCADE)
 

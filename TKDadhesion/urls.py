@@ -21,5 +21,5 @@ from inscription import views as inscript_views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('simulCotis/', cotis_views.simul_cotisation, name='calcul_simul'),
-    path('inscription', inscript_views.inscription, name="inscription")
+    path('inscription/', inscript_views.inscription, name="inscription")
 ]

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %}  Fin d'inscription  {% endblock %}
+
+{% block content %}
+
+        <!-- TITRE DE LA PAGE -->
+        <div class="h2 text-center">
+            Fin d'inscription Taekwondo
+        </div>
+
+    <div class="container">
+
+        <div class="h4 text-center">
+          {{ formAdh.nom_adh.value }} {{ formAdh.prenom_adh.value }} est inscrit(e) au Mudo club Argenteuil de Taekwondo pour la saison {{ saison_actuelle }}.
+          <br><br>
+          La cotisation annuelle à régler est de {{ cotis_adh }}€. Vous pouvez payer par chèque, virement, liquide en 3 fois.
+          <br><br>
+          Merci d'apporter au club une enveloppe portant la mention <strong>{{ code_famille }}</strong> avec :
+          <ul>
+            <li>une photo d'identité avec le nom de l'adhérent au dos</li>
+            <li>un certificat médical à la pratique du taekwondo</li>
+            <li>la cotisation (chèque(s) ou liquide</li>
+          </ul>
+        </div>
+
+    </div>
+
+
+{% endblock %}

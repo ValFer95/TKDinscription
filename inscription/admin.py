@@ -1,9 +1,9 @@
 from django.contrib import admin
-from inscription.models import Adherent, Contact, Famille, Grade, CategorieCombat, Adherent_Saison
+from inscription.models import Adherent, Contact, Famille, Grade, CategorieCombat, Adherent_Saison, Paiement, HistoriquePaiement
 
 @admin.register(Adherent)
 class AdherentAdmin(admin.ModelAdmin):
-    list_display = ('nom_adh', 'prenom_adh','ddn', 'sexe', 'etudiant', 'adresse', 'cp', 'ville', 'nationalite',
+    list_display = ('nom_adh', 'prenom_adh','ddn', 'sexe', 'taille', 'etudiant', 'adresse', 'cp', 'ville', 'nationalite',
                     'numtel_adh', 'email_adh', 'contact', 'date_crea', 'date_last_modif')
     ordering = ('nom_adh', 'prenom_adh')
 
@@ -40,3 +40,15 @@ class Adherent_SaisonAdmin(admin.ModelAdmin):
 class FamilleAdmin(admin.ModelAdmin):
     list_display = ('nom_famille',)
     ordering = ('nom_famille', )
+
+
+@admin.register(Paiement)
+class PaiementAdmin(admin.ModelAdmin):
+    list_display = ('famille', 'saison', 'montant_cotis', 'paye',)
+    ordering = ('famille', 'saison', )
+
+
+@admin.register(HistoriquePaiement)
+class HistoriquePaiementAdmin(admin.ModelAdmin):
+    list_display = ('famille', 'saison', 'montant_regle', 'type_rglmt', 'date_rglt')
+    ordering = ('famille', 'saison', )

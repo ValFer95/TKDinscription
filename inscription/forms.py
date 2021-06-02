@@ -16,18 +16,10 @@ class ContactForm(forms.ModelForm):
 
 
 class GradeForm(forms.ModelForm):
-    couleur = forms.ModelChoiceField(queryset=Grade.objects.all().order_by('-keup'))
+    couleur = forms.ModelChoiceField(queryset=Grade.objects.all().order_by('-keup'), required=False)
     class Meta:
         model = Grade
         fields =  ['couleur',]
-
-
-class CategorieForm(forms.ModelForm):
-    categorie = forms.ModelChoiceField(queryset=Categorie.objects.all().order_by('ordre_affichage'))
-
-    class Meta:
-        model = Categorie
-        fields = ['categorie', ]
 
 
 class DisciplineForm(forms.ModelForm):
