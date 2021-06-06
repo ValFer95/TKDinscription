@@ -6,197 +6,206 @@
 
 {% block content %}
 
-    <!--<div class="container">-->
+    <!-- TITRE DE LA PAGE -->
+    <div class="h2 text-center">
+        Fiche d'inscription Taekwondo pour la saison {{ saison_actuelle }}
+    </div>
 
-        <!-- TITRE DE LA PAGE -->
-        <div class="h2 text-center">
-            Fiche d'inscription Taekwondo pour la saison {{ saison_actuelle }}
+    <!-- FORMULAIRE D'INSCRIPTION NOUVEL ADHERENT  -->
+    <form class="mx-auto" action="{% url 'inscription' %}" method="post" style="width:800px">
+        {% csrf_token %}
+
+        <!-- PARTIE INFORMATIONS ADHERENT  -->
+        {% if formAdh.errors or formContact.errors %}
+            <div class="alert alert-danger">
+                <strong> Une erreur a été détectée. Merci de vérifier vos informations.</strong>
+            </div>
+        {% endif %}
+
+
+        <div class="lead my-1">Informations adhérent</div>
+        <div class="border p-3">
+            <!-- nom prénom adhérent-->
+            <div class="row align-items-center">
+                <div class="col-md-6 text-start">
+                    {% render_field formAdh.nom_adh class="form-control ms-1 mb-2" placeholder="Nom adhérent" type="text" %}
+                </div>
+                {% for error in formAdh.non_field_errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
+                    </div>
+                {% endfor %}
+                <div class="col-md-6 text-start">
+                    {% render_field formAdh.prenom_adh class="form-control ms-1 mb-2" placeholder="Prénom adhérent" type="text" %}
+                </div>
+            </div>
+
+            <!-- adresse adhérent-->
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    {% render_field formAdh.adresse class="form-control ms-1 mb-2" placeholder="Adresse" type="text" %}
+                </div>
+            </div>
+
+            <!-- code postal et ville adhérent-->
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    {{ formAdh.cp|attr:"placeholder:CP"|attr:"maxlength:5"|add_class:"short_input_text form-control ms-1 mb-2" }}
+                </div>
+                <div class="col-md-5">
+                    {{ formAdh.ville|attr:"placeholder:Ville"|add_class:"form-control ms-1 mb-2" }}
+                </div>
+            </div>
+
+            <!-- date de naissance, sexe, taille, étudiant adhérent-->
+            <div class="row align-items-center">
+                <div class="col-md-3 text-start">
+                    <div id="ddnlHelp" class="form-text">Date de naissance adhérent</div>
+                    {{ formAdh.ddn|attr:"placeholder:JJ/MM/AAAA"|attr:"maxlength:10"|add_class:"short_input_text"|add_class:"form-control ms-1 mb-2" }}
+                </div>
+                {% if formAdh.ddn.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ formAdh.ddn.errors }}</strong>
+                    </div>
+                {% endif %}
+                <div class="col-md-3 text-start">
+                    <div id="sexelHelp" class="form-text">Sexe adhérent</div>
+                    {{ formAdh.sexe|add_class:"short_input_text form-select ms-1 mb-2" }}
+                </div>
+                <div class="col-md-3 text-start">
+                    <div id="taillelHelp" class="form-text">Taille adhérent en cm</div>
+                    {{ formAdh.taille|attr:"placeholder:1xx"|attr:"maxlength:3"|add_class:"short_input_text form-control ms-1 mb-2" }}
+                </div>
+                {% if formAdh.taille.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ formAdh.taille.errors }}</strong>
+                    </div>
+                {% endif %}
+                <div class="col-md-3 text-start">
+                    <div id="etudlHelp" class="form-text">Etudiant (18 ans et plus)</div>
+                    {{ formAdh.etudiant|add_class:"short_input_text form-select ms-1 mb-2" }}
+                </div>
+            </div>
+
+            <!-- nationalite adhérent-->
+            <div class="row align-items-center">
+                <div class="col-md-4 text-start">
+                    {{ formAdh.nationalite|attr:"placeholder:Nationalité"|add_class:"form-control ms-1 mb-2" }}
+                </div>
+            </div>
+
+            <!-- discipline, grade adhérent-->
+            <div class="row">
+                <div class="col-md-4 text-start">
+                    <div id="disciplineHelp" class="form-text">Discipline choisie</div>
+                    {{ formDiscipline.discipline|add_class:"form-select ms-1 mb-2" }}
+                </div>
+                <div class="col-md-4 text-start">
+                    <div id="gradeHelp" class="form-text">Grade taekwondo actuel</div>
+                    {{ formGrade.couleur|add_class:"form-select ms-1 mb-2" }}
+                </div>
+            </div>
+
+            <!-- numéro téléphone, e-mail téléphone adhérent-->
+            <div class="row">
+                <div class="col-md-4 text-start">
+                    <div id="numTelHelp" class="form-text">Numéro téléphone (facultatif)</div>
+                    {{ formAdh.numtel_adh|attr:"placeholder:0xxxxxxxxx"|attr:"maxlength:10"|add_class:"form-control ms-1 mb-2" }}
+                </div>
+                {% if formAdh.numtel_adh.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ formAdh.numtel_adh.errors }}</strong>
+                    </div>
+                {% endif %}
+                <div class="col-md-6 text-start">
+                    <div id="mailHelp" class="form-text">Email (facultatif)</div>
+                    {{ formAdh.email_adh|attr:"placeholder:nom@mail.xxx"|add_class:"form-control ms-1 mb-2" }}
+                </div>
+                {% if formAdh.email_adh.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ formAdh.email_adh.errors }}</strong>
+                    </div>
+                {% endif %}
+            </div>
         </div>
 
-        <!-- FORMULAIRE D'INSCRIPTION NOUVEL ADHERENT  -->
-        <form class="mx-auto" action="{% url 'inscription' %}" method="post" style="width:800px">
-            {% csrf_token %}
+        <input id="id_code_famille" name="code_famille" type="hidden" value="{{ code_famille }}">
+        <input id="id_cotis_adh" name="cotis_adh" type="hidden" value="{{ cotis_adh }}">
+        <input id="id_nb_personnes" name="nb_personnes" type="hidden" value="{{ nb_personnes }}">
 
-            <!-- PARTIE INFORMATIONS ADHERENT  -->
-            <div class="lead my-1">Informations adhérent</div>
-            <div class="border p-3">
-                <!-- nom prénom adhérent-->
-                <div class="row align-items-center">
-                    <div class="col-md-6 text-start">
-                        {% render_field formAdh.nom_adh class="form-control ms-1 mb-2" placeholder="Nom adhérent" type="text" %}
-                    </div>
-                    {% for error in formAdh.non_field_errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ error|escape }}</strong>
-                        </div>
-                    {% endfor %}
-                    <div class="col-md-6 text-start">
-                        {% render_field formAdh.prenom_adh class="form-control ms-1 mb-2" placeholder="Prénom adhérent" type="text" %}
-                    </div>
+        <!-- PARTIE INFORMATIONS CONTACT  -->
+        <div class="lead my-1">Informations personne contact</div>
+        <div class="border p-3">
+            <!-- nom prénom contact principal-->
+            <div class="row align-items-center">
+                <div class="col-md-6 text-start">
+                    {% render_field formContact.nom_contact class="form-control ms-1 mb-2" placeholder="Nom personne contact principal" type="text" %}
                 </div>
-
-                <!-- adresse adhérent-->
-                <div class="row align-items-center">
-                    <div class="col-md-8">
-                        {% render_field formAdh.adresse class="form-control ms-1 mb-2" placeholder="Adresse" type="text" %}
+                {% for error in formContact.non_field_errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ error|escape }}</strong>
                     </div>
-                </div>
-
-                <!-- code postal et ville adhérent-->
-                <div class="row align-items-center">
-                    <div class="col-md-2">
-                        {{ formAdh.cp|attr:"placeholder:CP"|attr:"maxlength:5"|add_class:"short_input_text form-control ms-1 mb-2" }}
-                    </div>
-                    <div class="col-md-5">
-                        {{ formAdh.ville|attr:"placeholder:Ville"|add_class:"form-control ms-1 mb-2" }}
-                    </div>
-                </div>
-
-                <!-- date de naissance, sexe, taille, étudiant adhérent-->
-                <div class="row align-items-center">
-                    <div class="col-md-3 text-start">
-                        <div id="ddnlHelp" class="form-text">Date de naissance adhérent</div>
-                        {{ formAdh.ddn|attr:"placeholder:JJ/MM/AAAA"|attr:"maxlength:10"|add_class:"short_input_text"|add_class:"form-control ms-1 mb-2" }}
-                    </div>
-                    {% if formAdh.ddn.errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ formAdh.ddn.errors }}</strong>
-                        </div>
-                    {% endif %}
-                    <div class="col-md-3 text-start">
-                        <div id="sexelHelp" class="form-text">Sexe adhérent</div>
-                        {{ formAdh.sexe|add_class:"short_input_text form-select ms-1 mb-2" }}
-                    </div>
-                    <div class="col-md-3 text-start">
-                        <div id="taillelHelp" class="form-text">Taille adhérent en cm</div>
-                        {{ formAdh.taille|attr:"placeholder:1xx"|attr:"maxlength:3"|add_class:"short_input_text form-control ms-1 mb-2" }}
-                    </div>
-                    {% if formAdh.taille.errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ formAdh.taille.errors }}</strong>
-                        </div>
-                    {% endif %}
-                    <div class="col-md-3 text-start">
-                        <div id="etudlHelp" class="form-text">Etudiant (18 ans et plus)</div>
-                        {{ formAdh.etudiant|add_class:"short_input_text form-select ms-1 mb-2" }}
-                    </div>
-                </div>
-
-                <!-- nationalite adhérent-->
-                <div class="row align-items-center">
-                    <div class="col-md-4 text-start">
-                        {{ formAdh.nationalite|attr:"placeholder:Nationalité"|add_class:"form-control ms-1 mb-2" }}
-                    </div>
-                </div>
-
-                <!-- discipline, grade adhérent-->
-                <div class="row">
-                    <div class="col-md-4 text-start">
-                        <div id="disciplineHelp" class="form-text">Discipline choisie</div>
-                        {{ formDiscipline.discipline|add_class:"form-select ms-1 mb-2" }}
-                    </div>
-                    <div class="col-md-4 text-start">
-                        <div id="gradeHelp" class="form-text">Grade taekwondo actuel</div>
-                        {{ formGrade.couleur|add_class:"form-select ms-1 mb-2" }}
-                    </div>
-                </div>
-
-                <!-- numéro téléphone, e-mail téléphone adhérent-->
-                <div class="row">
-                    <div class="col-md-4 text-start">
-                        <div id="numTelHelp" class="form-text">Numéro téléphone (facultatif)</div>
-                        {{ formAdh.numtel_adh|attr:"placeholder:0xxxxxxxxx"|attr:"maxlength:10"|add_class:"form-control ms-1 mb-2" }}
-                    </div>
-                    {% if formAdh.numtel_adh.errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ formAdh.numtel_adh.errors }}</strong>
-                        </div>
-                    {% endif %}
-                    <div class="col-md-6 text-start">
-                        <div id="mailHelp" class="form-text">Email (facultatif)</div>
-                        {{ formAdh.email_adh|attr:"placeholder:nom@mail.xxx"|add_class:"form-control ms-1 mb-2" }}
-                    </div>
-                    {% if formAdh.email_adh.errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ formAdh.email_adh.errors }}</strong>
-                        </div>
-                    {% endif %}
+                {% endfor %}
+                <div class="col-md-6 text-start">
+                    {% render_field formContact.prenom_contact class="form-control ms-1 mb-2" placeholder="Prénom personne contact principal" type="text" %}
                 </div>
             </div>
 
-            <!-- PARTIE INFORMATIONS CONTACT  -->
-            <div class="lead my-1">Informations personne contact</div>
-            <div class="border p-3">
-                <!-- nom prénom contact principal-->
-                <div class="row align-items-center">
-                    <div class="col-md-6 text-start">
-                        {% render_field formContact.nom_contact class="form-control ms-1 mb-2" placeholder="Nom personne contact principal" type="text" %}
-                    </div>
-                    {% for error in formContact.non_field_errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ error|escape }}</strong>
-                        </div>
-                    {% endfor %}
-                    <div class="col-md-6 text-start">
-                        {% render_field formContact.prenom_contact class="form-control ms-1 mb-2" placeholder="Prénom personne contact principal" type="text" %}
-                    </div>
+            <!-- numéro téléphone, mail contact principal-->
+            <div class="row">
+                <div class="col-md-4 text-start">
+                    <div id="numTelCntctHelp" class="form-text">Numéro téléphone contact principal</div>
+                    {{ formContact.numtel_contact1|attr:"placeholder:0xxxxxxxxx"|attr:"maxlength:10"|add_class:"form-control ms-1 mb-2" }}
                 </div>
-
-                <!-- numéro téléphone, mail contact principal-->
-                <div class="row">
-                    <div class="col-md-4 text-start">
-                        <div id="numTelCntctHelp" class="form-text">Numéro téléphone contact principal</div>
-                        {{ formContact.numtel_contact1|attr:"placeholder:0xxxxxxxxx"|attr:"maxlength:10"|add_class:"form-control ms-1 mb-2" }}
+                {% if formContact.numtel_contact1.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ formContact.numtel_contact1.errors }}</strong>
                     </div>
-                    {% if formContact.numtel_contact1.errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ formContact.numtel_contact1.errors }}</strong>
-                        </div>
-                    {% endif %}
-                    <div class="col-md-6 text-start">
-                        <div id="mailCntctHelp" class="form-text">Email contact principal</div>
-                        {{ formContact.email_contact|attr:"placeholder:nom@mail.xxx"|add_class:"form-control ms-1 mb-2" }}
-                    </div>
-                    {% if formContact.email_contact.errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ formContact.email_contact.errors }}</strong>
-                        </div>
-                    {% endif %}
+                {% endif %}
+                <div class="col-md-6 text-start">
+                    <div id="mailCntctHelp" class="form-text">Email contact principal</div>
+                    {{ formContact.email_contact|attr:"placeholder:nom@mail.xxx"|add_class:"form-control ms-1 mb-2" }}
                 </div>
-
-                <!-- numéro téléphone contact 1 et 2-->
-                <div class="row">
-                    <div class="col-md-4 text-start">
-                        <div id="numTel2CntctHelp" class="form-text">Numéro téléphone contact 2 (facultatif)</div>
-                        {{ formContact.numtel_contact2|attr:"placeholder:0xxxxxxxxx"|add_class:"form-control ms-1 mb-2" }}
+                {% if formContact.email_contact.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ formContact.email_contact.errors }}</strong>
                     </div>
-                    {% if formContact.numtel_contact2.errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ formContact.numtel_contact2.errors }}</strong>
-                        </div>
-                    {% endif %}
-                    <div class="col-md-4 text-start">
-                        <div id="numTel3CntctHelp" class="form-text">Numéro téléphone contact 3 (facultatif)</div>
-                        {{ formContact.numtel_contact3|attr:"placeholder:0xxxxxxxxx"|add_class:"form-control ms-1 mb-2" }}
-                    </div>
-                    {% if formContact.numtel_contact3.errors %}
-                        <div class="alert alert-danger">
-                            <strong>{{ formContact.numtel_contact3.errors }}</strong>
-                        </div>
-                    {% endif %}
-                </div>
-
+                {% endif %}
             </div>
 
-            <div class="text-center">
-                <button type="submit" class="btn btn-danger me-3">Enregistrer</button>
-                <a class="btn btn-danger" href="{% url 'inscription' %}">Effacer</a>
+            <!-- numéro téléphone contact 1 et 2-->
+            <div class="row">
+                <div class="col-md-4 text-start">
+                    <div id="numTel2CntctHelp" class="form-text">Numéro téléphone contact 2 (facultatif)</div>
+                    {{ formContact.numtel_contact2|attr:"placeholder:0xxxxxxxxx"|add_class:"form-control ms-1 mb-2" }}
+                </div>
+                {% if formContact.numtel_contact2.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ formContact.numtel_contact2.errors }}</strong>
+                    </div>
+                {% endif %}
+                <div class="col-md-4 text-start">
+                    <div id="numTel3CntctHelp" class="form-text">Numéro téléphone contact 3 (facultatif)</div>
+                    {{ formContact.numtel_contact3|attr:"placeholder:0xxxxxxxxx"|add_class:"form-control ms-1 mb-2" }}
+                </div>
+                {% if formContact.numtel_contact3.errors %}
+                    <div class="alert alert-danger">
+                        <strong>{{ formContact.numtel_contact3.errors }}</strong>
+                    </div>
+                {% endif %}
             </div>
 
+        </div>
 
-        </form>
+        <div class="text-center">
+            <button type="submit" class="btn btn-danger me-3" name="Enrg" value="Terminer">Terminer l'inscription</button>
+            <button type="submit" class="btn btn-danger me-3" name="Enrg" value="Continuer">Inscrire une autre personne</button>
+            <button type="reset" class="btn btn-danger me-3" name="efface">Effacer</button>
+            <!--<a class="btn btn-danger" href="{% url 'inscription' %}">Effacer</a>-->
+        </div>
 
-    <!--</div>-->
+
+    </form>
 
 
 {% endblock %}

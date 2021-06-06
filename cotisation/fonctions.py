@@ -5,7 +5,7 @@ import math
 
 # *** CALCUL DU TAUX DE REDUCTION POUR LA FAMILLE ENTIERE SELON LE NOMBRE DE PERSONNES ***
 def reduc_famille(nb_personnes, reinscription, saison):
-    taux_famille = 1
+    taux_famille = 0
     nb_personnnes_reduc_max = 0
 
     for tr in TauxReduction.objects.filter(saison__saison=saison).\
@@ -30,19 +30,20 @@ def reduc_famille(nb_personnes, reinscription, saison):
 
 # CALCUL DU TAUX DE REDUCTION POUR UNE PERSONNE ***
 def reduc_une_personne(reinscription, saison):
-    taux_reduc = 1
+    taux_reduc = 0
     if reinscription == '1':  # applique une réduction pour les anciens adhérents sans condition
         for r in TauxReduction.objects.filter(saison__saison=saison,
                                               condition_anciens=True,
                                               condition_reduc=None).values():
-            taux_reduc -= int(r['pourcentage_reduc']) / 100
+            #taux_reduc -= int(r['pourcentage_reduc']) / 100
+            taux_reduc = int(r['pourcentage_reduc'])
 
     if reinscription == '0':  # applique une réduction pour les nouveaux adhérents sans condition
         for r in TauxReduction.objects.filter(saison__saison=saison,
                                               condition_nouveaux=True,
                                               condition_reduc=None).values():
-            taux_reduc -= int(r['pourcentage_reduc']) / 100
-
+            #taux_reduc -= int(r['pourcentage_reduc']) / 100
+            taux_reduc = int(r['pourcentage_reduc'])
     return taux_reduc
 
 
@@ -61,6 +62,13 @@ def tarif_calcul (code_tarif, saison, reinscription):
             tarif = i['tarif_nouveau']
 
     return tarif
+
+
+# APPLICATION DE LA REDUCTION A LA COTISATION ANNUUELLE, renvoie la cotisation annuelle avec les réductions
+def appliq_reduc(taux_reduc, cotis_annuelle):
+    taux_reduc = (100 - int(taux_reduc))/100
+    cotis_annuelle *= taux_reduc
+    return math.floor(cotis_annuelle)
 
 
 # *** CALCUL DE LA COTISATION ANNUELLE POUR LA FAMILLE ENTIERE AVEC REDUCTION ***
@@ -84,12 +92,16 @@ def calcul(valeurs_post, saison):
     # *** APPLICATION DES REDUCTIONS ***
     if cotis_annuelle > 0:
         taux_reduc = reduc_une_personne(valeurs_post['reinscription'], saison)
+        print("taux_reduc avant :", taux_reduc)
 
         if nb_personnes > 1:
             taux_famille = reduc_famille(nb_personnes, valeurs_post['reinscription'], saison)
-            # print('taux_famille: ', taux_famille)
-            taux_reduc -= int(taux_famille) / 100
+            print("taux_famille :", taux_famille)
+            taux_reduc += int(taux_famille)
 
-        # print('taux_reduc final', taux_reduc)
-        cotis_annuelle *= taux_reduc
-    return math.floor(cotis_annuelle), nb_personnes, valeurs_post['reinscription']
+        print("taux_reduc après:", taux_reduc)
+        print("cotis_annuelle :", cotis_annuelle)
+
+        cotis_annuelle = appliq_reduc(taux_reduc, cotis_annuelle)
+
+    return cotis_annuelle, nb_personnes, valeurs_post['reinscription']
