@@ -1,5 +1,5 @@
 from random import choice, randrange
-from cotisation.fonctions import tarif_calcul, reduc_une_personne, reduc_famille
+from cotisation.fonctions import tarif_calcul, reduc_une_personne, reduc_famille, appliq_reduc
 
 suffixe = ['&', '#', '@', '*', '-', '$', '%']
 
@@ -13,5 +13,9 @@ def crea_code_famille(nom_adh):
 def calcul_cotis_adh(code_tarif, saison, reinscription):
     tarif = tarif_calcul(code_tarif, saison, reinscription)
     taux_reduc = reduc_une_personne(saison, reinscription)
+    cotis_annuelle = appliq_reduc(taux_reduc, tarif)
 
-    return tarif * taux_reduc
+    print("dans la fonction, tarif :", tarif)
+    print("dans la fonction, taux_reduc :", taux_reduc)
+
+    return cotis_annuelle

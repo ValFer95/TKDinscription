@@ -16,6 +16,9 @@ def inscription(request):
     cotis_adh = 0
     code_famille = ''
     nb_personnes = 0
+    list_nom = ''
+    list_discipline = ''
+    list_cotisation = ''
 
     if request.method == 'GET':
         # affichage du fomulaire vide
@@ -110,22 +113,52 @@ def inscription(request):
 
             # génération du Code Tarification qui permet d'aller chercher le tarif de l'adhérent selon son age et la discipline
             code_tarification = categorie_adh.code_catg + discipline.code_discipl
-            print('code_tarification : ', code_tarification)
+            #print('code_tarification : ', code_tarification)
             # calcul de la cotisation pour l'adhérent
             cotis_adh = calcul_cotis_adh(code_tarification, saison_actuelle, 0)
+
+            # remplissage des listes nom des adhérents, discipline et cotsation de l'adhérent pour affichage en fin d'inscription
+            list_nom = request.POST['list_nom']
+            if request.POST['list_nom'] != '':
+                list_nom = list_nom + ',' + request.POST['nom_adh'] + ' ' + request.POST['prenom_adh']
+            else:
+                list_nom = request.POST['nom_adh'] + ' ' + request.POST['prenom_adh']
+
+            list_discipline = request.POST['list_discipline']
+            if request.POST['list_discipline'] != '':
+                list_discipline = list_discipline + ',' + discipline.nom_discipl
+            else:
+                list_discipline = discipline.nom_discipl
+
+            list_cotisation = request.POST['list_cotisation']
+            if request.POST['list_cotisation'] != '':
+                list_cotisation = list_cotisation + ',' + str(cotis_adh)
+            else:
+                list_cotisation = str(cotis_adh)
+
             # addition de cotisation de l'adhérent actuel et de la cotisation de l'adhérent inscrit juste avant
             if request.POST['cotis_adh'] != '0':
                 cotis_adh += int(request.POST['cotis_adh'])
-            print('cotis_adh :', cotis_adh)
+            #print('cotis_adh :', cotis_adh)
 
             if request.POST['Enrg'] == 'Terminer':
                 if request.POST['cotis_adh'] != '0':
                     # récupération du taux de réduction valable pour la famille
                     taux_reduc = reduc_famille(nb_personnes, 0, saison_actuelle)
                     #cotis_adh = cotis_adh * ((100 - int(taux_reduc))/100)
-                    cotis_adh = appliq_reduc(taux_reduc,cotis_adh)
-                    print("nb_personnes :", nb_personnes)
-                    print("taux_reduc :", taux_reduc)
+                    cotis_adh = appliq_reduc(taux_reduc, cotis_adh)
+                    #print("nb_personnes :", nb_personnes)
+                    #print("taux_reduc :", taux_reduc)
+
+                    list_nom = list_nom.split(',')
+                    list_discipline = list_discipline.split(',')
+                    list_cotisation = list_cotisation.split(',')
+
+                else:   # je demande à spliter sur "*" pour garder les mots ensemble
+                    list_nom = list_nom.split('*')
+                    list_discipline = list_discipline.split('*')
+                    list_cotisation = list_cotisation.split('*')
+
                 # enregistrement montant de la cotisation dans la table Paiement
                 Paiement.objects.create(famille=info_famille, saison=saison_actuelle, montant_cotis=cotis_adh)
 
@@ -151,6 +184,19 @@ def inscription(request):
         'cotis_adh' : cotis_adh,
         'code_famille' : code_famille,
         'nb_personnes' : nb_personnes,
+        'list_nom': list_nom,
+        'list_discipline': list_discipline,
+        'list_cotisation' : list_cotisation,
     }
 
     return render(request, page_html_suivante, context )
+
+
+def fin_inscription(request):
+    return render(request, 'inscription/fin_inscription.html', {
+        'list_nom': ['Sylvain FamilleDeTrois', 'Alexis FamilleDeTrois', 'Francine FamilleDeTrois'],
+        'list_discipline': ['Body Taekwondo', 'Taekwondo', 'Taekwondo'],
+        'list_cotisation' : ['310€', '290€', '250€'] }
+                  )
+
+
