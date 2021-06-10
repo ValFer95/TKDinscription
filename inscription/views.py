@@ -192,11 +192,3 @@ def inscription(request):
     return render(request, page_html_suivante, context )
 
 
-def fin_inscription(request):
-    return render(request, 'inscription/fin_inscription.html', {
-        'list_nom': ['Sylvain FamilleDeTrois', 'Alexis FamilleDeTrois', 'Francine FamilleDeTrois'],
-        'list_discipline': ['Body Taekwondo', 'Taekwondo', 'Taekwondo'],
-        'list_cotisation' : ['310€', '290€', '250€'] }
-                  )
-
-

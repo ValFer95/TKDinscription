@@ -8,7 +8,7 @@
 
     <div class="container">
         <!-- TITRE DE LA PAGE -->
-        <div class="h2 text-center">
+        <div class="h2 text-center mt-3">
             Simulateur tarif cotisation pour la saison {{ saison_actuelle }}
         </div>
 
@@ -82,7 +82,7 @@
 
             <div class="row row-cols-md-4 align-items-center ">
                 <div class="col text-start fw-bold">
-                    Adulte <br><span class="small text-muted">18 ans et + </span>
+                    Adulte <span class="small text-muted">18 ans et + </span>
                 </div>
                 <div class="col">
                     {{ form.adultTKD|attr:"autofocus"|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
@@ -97,7 +97,7 @@
 
             <div class="row row-cols-md-4 align-items-center">
                 <div class="col text-start fw-bold">
-                    Etudiant <br><span class="small text-muted">18 ans et + </span>
+                    Etudiant <span class="small text-muted">18 ans et + </span>
                 </div>
                 <div class="col">
                     {{ form.etudTKD|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
@@ -112,7 +112,7 @@
 
             <div class="row row-cols-md-4 align-items-center">
                 <div class="col text-start fw-bold">
-                    Adolescent <br><span class="small text-muted">12-17 ans</span>
+                    Adolescent <span class="small text-muted">12-17 ans</span>
                 </div>
                 <div class="col">
                     {{ form.adoTKD|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
@@ -127,7 +127,7 @@
 
             <div class="row row-cols-md-4 align-items-center">
                 <div class="col text-start fw-bold">
-                    Enfant <br><span class="small text-muted">6-11 ans</span>
+                    Enfant <span class="small text-muted">6-11 ans</span>
                 </div>
                 <div class="col">
                     {{ form.enfTKD|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}
@@ -142,7 +142,7 @@
 
             <div class="row row-cols-md-4 align-items-center">
                 <div class="col text-start fw-bold">
-                    Baby <br><span class="small text-muted">3-5 ans</span>
+                    Baby <span class="small text-muted">3-5 ans</span>
                 </div>
                 <div class="col">
                     {{ form.babyTKD|attr:"placeholder:0"|attr:"maxlength:1"|add_class:"taille_input_text"|add_class:"form-control mx-auto mb-2" }}

@@ -1,6 +1,11 @@
+html {
+    height: 100%;
+}
+
 body {
     background-color: #F4F7F6;
     font-family: 'Roboto', sans-serif;
+    height: 100%;
 }
 
 .taille_input_text {

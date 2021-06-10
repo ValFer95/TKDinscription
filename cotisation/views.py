@@ -30,3 +30,8 @@ def simul_cotisation(request):
     }
 
     return render(request, 'cotisation/simul_cotisation.html', context )
+
+
+def accueil(request):
+    saison_actuelle = Saison.objects.get(saison_actuelle=True)
+    return render(request, 'accueil.html', {'saison_actuelle':saison_actuelle} )
