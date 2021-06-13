@@ -22,5 +22,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('simulCotis/', cotis_views.simul_cotisation, name='calcul_simul'),
     path('inscription/', inscript_views.inscription, name="inscription"),
-    path('accueil/', cotis_views.accueil, name='accueil')
+    path('accueil/', cotis_views.accueil, name='accueil'),
+    path('', cotis_views.accueil),
 ]
