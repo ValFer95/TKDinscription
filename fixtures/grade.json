@@ -1,0 +1,162 @@
+[
+{
+  "model": "inscription.grade",
+  "pk": 1,
+  "fields": {
+    "couleur": "Blanche",
+    "keup": 15
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 2,
+  "fields": {
+    "couleur": "Blanche-jaune",
+    "keup": 15
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 3,
+  "fields": {
+    "couleur": "Jaune",
+    "keup": 14
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 4,
+  "fields": {
+    "couleur": "Jaune-Orange",
+    "keup": 13
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 5,
+  "fields": {
+    "couleur": "Orange",
+    "keup": 12
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 6,
+  "fields": {
+    "couleur": "Orange-verte",
+    "keup": 11
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 7,
+  "fields": {
+    "couleur": "Verte",
+    "keup": 10
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 8,
+  "fields": {
+    "couleur": "Verte-violette",
+    "keup": 9
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 9,
+  "fields": {
+    "couleur": "Violette",
+    "keup": 8
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 10,
+  "fields": {
+    "couleur": "Violette-bleue",
+    "keup": 7
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 11,
+  "fields": {
+    "couleur": "Bleue",
+    "keup": 6
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 12,
+  "fields": {
+    "couleur": "Bleue 1 barette",
+    "keup": 5
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 13,
+  "fields": {
+    "couleur": "Bleue 2 barettes",
+    "keup": 4
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 14,
+  "fields": {
+    "couleur": "Rouge",
+    "keup": 3
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 15,
+  "fields": {
+    "couleur": "Rouge 1 barette",
+    "keup": 2
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 16,
+  "fields": {
+    "couleur": "Rouge 2 barettes",
+    "keup": 1
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 17,
+  "fields": {
+    "couleur": "Rouge-noire",
+    "keup": 1
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 18,
+  "fields": {
+    "couleur": "Noire 1er dan",
+    "keup": 0
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 19,
+  "fields": {
+    "couleur": "Noire 2ème dan",
+    "keup": 0
+  }
+},
+{
+  "model": "inscription.grade",
+  "pk": 20,
+  "fields": {
+    "couleur": "Noire 3ème dan",
+    "keup": 0
+  }
+}
+]
