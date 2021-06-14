@@ -1,5 +1,6 @@
 /.idea/
 /venv/
+/__pycache__/
 notes.txt
 avancement.txt
 git status 060621.docx
