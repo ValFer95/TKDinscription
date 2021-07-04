@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    #'django.contrib.sessions',      # pour gérer les variables de session dans la base de données
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
@@ -55,6 +55,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.file'    # pour gérer les variables de sessions dans un fichier
+SESSION_FILE_PATH = os.path.join(BASE_DIR, 'tmp')           # pour stocker le fichier de var de session dans le tmp
 
 ROOT_URLCONF = 'TKDadhesion.urls'
 

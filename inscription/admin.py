@@ -6,6 +6,7 @@ class AdherentAdmin(admin.ModelAdmin):
     list_display = ('nom_adh', 'prenom_adh','ddn', 'sexe', 'taille', 'etudiant', 'adresse', 'cp', 'ville', 'nationalite',
                     'numtel_adh', 'email_adh', 'contact', 'date_crea', 'date_last_modif')
     ordering = ('nom_adh', 'prenom_adh')
+    list_filter = ('famille__nom_famille',)
 
 
 @admin.register(Contact)
@@ -33,7 +34,8 @@ class CategorieCombatAdmin(admin.ModelAdmin):
 class Adherent_SaisonAdmin(admin.ModelAdmin):
     list_display = ('adherent', 'saison', 'categorie', 'discipline', 'certif_med', 'photo',
                     'grade', 'categorie_combat', 'date_crea', 'date_last_modif')
-    ordering = ('adherent', 'saison')
+    ordering = ('adherent__nom_adh', 'saison')
+    list_filter = ('adherent__nom_adh', 'discipline__nom_discipl', 'grade__couleur',)
 
 
 @admin.register(Famille)

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %}  Question avant inscription  {% endblock %}
+
+{% block content %}
+
+    <!-- TITRE DE LA PAGE -->
+    <div class="h2 text-center mt-3 mb-5">
+        Inscription ou ré-inscription pour la saison {{ saison_actuelle }}
+    </div>
+
+    <!-- DEMANDE DE REINSCRIPTION DES ADHERENTS 2020-2021 -->
+        <div class="border p-3 mx-auto mb-5" style="width:900px">
+            <form class="text-start" action="{% url 'q_inscription' %}" method="post">
+              {% csrf_token %}
+
+              <!-- ALERTE CODE FAMILLE INCONNU  -->
+              {% if not famille_match %}
+                  <div class="alert alert-danger">
+                      <strong> Le code famille est inconnu.</strong>
+                  </div>
+              {% endif %}
+
+                <div class="row align-items-center">
+                    <div class="col-sm-8 text-start">
+                        <b>Pour la réinscription des adhérents saison 2020-2021</b>, saisir le code famille reçu
+                        par mail (y compris pour inscrire un nouveau membre de la famille) :
+                    </div>
+                    <div class="col-sm-3 text-center">
+                        <input type="text" class="form-control" id="id_code_famille" name="code_famille" placeholder="code famille"
+                               value="{{ code_famille }}" required>
+                    </div>
+                    <div class="col-sm-1 text-center">
+                        <button type="submit" class="btn btn-success me-3" name="Rech" value="Recherche">ok</button>
+                    </div>
+                </div>
+
+            </form>
+        </div>
+
+    <!-- DEMANDE DE NOUVELLE INSCRIPTION -->
+        <div class="border p-3 mx-auto" style="width:900px">
+            <div class="row align-items-center">
+                <div class="col-sm-8 text-start">
+                    <b>Pour une première inscription au Mudo club Argenteuil</b>, cliquez sur le bouton "inscription" :
+                </div>
+                <div class="col-sm-4 text-center">
+                    <a href="{% url 'inscription' %}" class="btn btn-success">Inscription</a>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}

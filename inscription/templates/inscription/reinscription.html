@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %}  Question avant inscription  {% endblock %}
+
+{% block content %}
+
+    <!-- TITRE DE LA PAGE -->
+    <div class="h2 text-center mt-3 mb-5">
+      Ré-inscription pour la saison {{ saison_actuelle }} pour la famille  <b>{{ code_famille }}</b>
+    </div>
+
+    <!-- CHOIX de REINSCRIPTION des MEMBRES de la FAMILLE -->
+        <div class="border p-3 mx-auto mb-5" style="width:900px">
+            <form class="text-center" action="{% url 'reinscription' %}" method="post">
+              {% csrf_token %}
+
+              <!-- PARTIE INFORMATIONS ADHERENT  -->
+              {% if not famille_match %}
+                  <div class="alert alert-danger">
+                      <strong> Merci de cocher au moins une case.</strong>
+                  </div>
+              {% endif %}
+
+
+                <div class="row align-items-center mt-2 mb-4">
+                  <div class="col text-center">
+                    <b>Cocher les cases pour sélectionner les personnes à réinscrire :</b>
+                  </div>
+                </div>
+
+              {% for membre in membres_famille %}
+                <div class="row align-items-center mx-auto mb-2">
+                    <div class="col text-center">
+                        <input class="form-check-input" type="checkbox" name="person_selected" value="{{ membre.1 }}" id="{{ membre.1 }}" checked>
+                        <label class="form-check-label">Oui, je réinscris</label>  <b>{{ membre.0 }}</b>
+                    </div>
+                </div>
+              {% endfor %}
+
+                <div class="row align-items-center mt-5">
+                  <div class="col text-center">
+                    <button type="submit" class="btn btn-success me-3" name="Rech" value="Recherche">Suivant</button>
+                  </div>
+                </div>
+            </form>
+        </div>
+
+
+{% endblock %}

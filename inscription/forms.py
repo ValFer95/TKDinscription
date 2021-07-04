@@ -1,5 +1,5 @@
 from django import forms
-from inscription.models import Adherent, Grade, Contact, Famille
+from inscription.models import Adherent, Grade, Contact, Famille, Adherent_Saison
 from cotisation.models import Saison, Categorie, Discipline
 
 class AdherentForm(forms.ModelForm):
@@ -22,11 +22,22 @@ class GradeForm(forms.ModelForm):
         fields =  ['couleur',]
 
 
+# pour affichage du grade de l'adhérent la saison passée (au moment de la réinscription)
+class GradeFormSelected(forms.ModelForm):
+    class Meta:
+        model = Grade
+        exclude = ('keup',)
+
+
 class DisciplineForm(forms.ModelForm):
     discipline = forms.ModelChoiceField(queryset=Discipline.objects.all().order_by('ordre_affichage'))
-
     class Meta:
         model = Discipline
         fields = ['discipline', ]
 
 
+# pour affichage de la liste déroulante avec la discipline choisie par l'adhérent la saison passée (au moment de la réinscription)
+class DisciplineFormSelected(forms.ModelForm):
+    class Meta:
+        model = Discipline
+        exclude = ('ordre_affichage', 'saison')

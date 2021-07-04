@@ -2,18 +2,23 @@
 {% load widget_tweaks %}
 {% load static %}
 
-{% block title %}  Fiche inscription  {% endblock %}
+{% block title %}  Fiche de réinscription  {% endblock %}
 
 {% block content %}
 
     <!-- TITRE DE LA PAGE -->
     <div class="h2 text-center mt-3">
-        Fiche d'inscription Taekwondo pour la saison {{ saison_actuelle }}
+        Fiche de réinscription pour la saison {{ saison_actuelle }}
     </div>
 
     <!-- FORMULAIRE D'INSCRIPTION NOUVEL ADHERENT  -->
-    <form class="mx-auto" action="{% url 'inscription' %}" method="post" style="width:800px">
+    <form class="mx-auto" action="{% url 'reinscription' %}" method="post" style="width:800px">
         {% csrf_token %}
+
+        {% for membre in person_selected %}
+            <input name="person_selected" type="hidden" value="{{ membre }}" id="{{ membre }}">
+        {% endfor %}
+        <input name="id_treated_person" type="hidden" value="{{ id_treated_person }}" id="{{ id_treated_person }}">
 
         <!-- PARTIE INFORMATIONS ADHERENT  -->
         {% if formAdh.errors or formContact.errors %}
@@ -23,13 +28,22 @@
         {% endif %}
 
 
-        <div class="lead my-1">Informations adhérent</div>
+<!--        <div class="lead my-1">Informations adhérent</div>-->
+        <div class="row my-1">
+            <div class="col-md-4 text-start lead">Informations adhérent</div>
+            <div class="col-md-8 text-start">
+              <input class="form-check-input" type="checkbox" checked>
+                <b>Vérifiez vos données.</b> Pour corriger, cliquez sur le bouton "Corriger mes données" en
+                bas de la page.
+            </div>
+        </div>
         <div class="border p-3">
             <!-- nom prénom adhérent-->
             <div class="row align-items-center">
                 <div class="col-md-6 text-start">
                     {% render_field formAdh.nom_adh class="form-control ms-1 mb-2" placeholder="Nom adhérent" type="text" %}
                 </div>
+
                 {% for error in formAdh.non_field_errors %}
                     <div class="alert alert-danger">
                         <strong>{{ error|escape }}</strong>
@@ -98,7 +112,11 @@
             <div class="row">
                 <div class="col-md-4 text-start">
                     <div id="disciplineHelp" class="form-text">Discipline choisie</div>
-                    {{ formDiscipline.discipline|add_class:"form-select ms-1 mb-2" }}
+                    {% if enabled == 'true' %}
+                        {{ formDiscipline.discipline|add_class:"form-select ms-1 mb-2" }}
+                    {% else %}
+                        {{ formDiscipline.nom_discipl|add_class:"form-select ms-1 mb-2" }}
+                    {% endif %}
                 </div>
                 <div class="col-md-4 text-start">
                     <div id="gradeHelp" class="form-text">Grade taekwondo actuel</div>
@@ -128,13 +146,6 @@
                 {% endif %}
             </div>
         </div>
-
-        <input id="id_code_famille" name="code_famille" type="hidden" value="{{ code_famille }}">
-        <input id="id_cotis_adh" name="cotis_adh" type="hidden" value="{{ cotis_adh }}">
-        <input id="id_nb_personnes" name="nb_personnes" type="hidden" value="{{ nb_personnes }}">
-        <input id="id_list_nom" name="list_nom" type="hidden" value="{{ list_nom }}">
-        <input id="id_list_discipline" name="list_discipline" type="hidden" value="{{ list_discipline }}">
-        <input id="id_list_cotisation" name="list_cotisation" type="hidden" value="{{ list_cotisation }}">
 
         <!-- PARTIE INFORMATIONS CONTACT  -->
         <div class="lead my-1">Informations personne contact</div>
@@ -199,16 +210,37 @@
             </div>
 
         </div>
+                <script>
+                    var etat= {{ enabled }}
+                    x=document.getElementsByTagName('input');
+                    l = x.length;
+                    for (i = 0; i < l; i++) {
+                       console.log(x[i].type);
+                       if (x[i].type != 'hidden') {
+                        x[i].disabled = !etat;
+                        }
+                    }
+
+                    y=document.getElementsByTagName('select');
+                    l = y.length;
+                    for (i = 0; i < l; i++) {
+                      y[i].disabled = !etat;
+                    }
+                </script>
 
         <div class="text-center mb-3">
-            <button type="submit" class="btn btn-danger me-3" name="Enrg" value="Continuer">Inscrire une autre personne</button>
-            <button type="reset" class="btn btn-danger me-3" name="efface">Effacer</button>
-            <!--<a class="btn btn-danger" href="{% url 'inscription' %}">Effacer</a>-->
+            <button type="submit" class="btn btn-danger me-3" name="corrige" value="Corriger">Corriger mes données</button>
+            {% if enabled == 'false' %}
+                <button type="submit" class="btn btn-danger me-3" name="suivant" value="Continuer">Page suivante</button>
+            {% else %}
+                <button type="submit" class="btn btn-danger me-3" name="enregistre" value="Continuer">Enregistrer et page suivante</button>
+            {% endif %}
+<!--            <a class="btn btn-danger" href="{% url 'reinscription' %}" name="corrige">Corriger mes données</a>-->
         </div>
 
-        <div class="text-center">
-            <button type="submit" class="btn btn-danger me-3" name="Enrg" value="Terminer">Terminer l'inscription</button>
-        </div>
+<!--        <div class="text-center">-->
+<!--            <button type="submit" class="btn btn-danger me-3" name="Enrg" value="Terminer">Terminer l'inscription</button>-->
+<!--        </div>-->
 
 
     </form>
