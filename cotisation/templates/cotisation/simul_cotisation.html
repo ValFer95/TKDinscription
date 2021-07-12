@@ -9,7 +9,7 @@
     <div class="container">
         <!-- TITRE DE LA PAGE -->
         <div class="h2 text-center mt-3">
-            Simulateur tarif cotisation pour la saison {{ saison_actuelle }}
+            Simulateur tarif cotisation pour la saison {{ saison_prochaine }}
         </div>
 
         <!-- AFFICHAGE DE L'ALERTE AVEC LE MONTANT DE LA COTISAION -->
@@ -33,6 +33,8 @@
                     <br>Réductions incluses.
                 {% endif %}
               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              <br>
+                <a class="alert-link" href="{% url 'q_inscription' %}">Inscription</a>
             </div>
         {% endif %}
 
@@ -57,7 +59,7 @@
 
                 </div>
                 <div class="col my-auto fw-bold">
-                    Taekwondo
+                    Taekwondo <span class="small text-muted"> + Body + 100% fém.</span>
                     <span class="text-danger" data-bs-toggle="tooltip" data-bs-placement="right"
                             title="Inclus : séances de taekwondo, body taekwondo et 100% féminin si désiré">
                         <img alt="information" src="{% static 'img/point-interrogation.png' %}" height="25" width="25"/>

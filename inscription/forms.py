@@ -1,4 +1,5 @@
 from django import forms
+from django.http import request
 from inscription.models import Adherent, Grade, Contact, Famille, Adherent_Saison
 from cotisation.models import Saison, Categorie, Discipline
 
@@ -29,8 +30,11 @@ class GradeFormSelected(forms.ModelForm):
         exclude = ('keup',)
 
 
+saison_prochaine = Saison.objects.get(saison_prochaine=True)
+
 class DisciplineForm(forms.ModelForm):
-    discipline = forms.ModelChoiceField(queryset=Discipline.objects.all().order_by('ordre_affichage'))
+    # discipline = forms.ModelChoiceField(queryset=Discipline.objects.all().order_by('ordre_affichage').distinct())
+    discipline = forms.ModelChoiceField(queryset=Discipline.objects.filter(saison=saison_prochaine).order_by('ordre_affichage'))
     class Meta:
         model = Discipline
         fields = ['discipline', ]

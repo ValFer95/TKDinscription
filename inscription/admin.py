@@ -35,7 +35,7 @@ class Adherent_SaisonAdmin(admin.ModelAdmin):
     list_display = ('adherent', 'saison', 'categorie', 'discipline', 'certif_med', 'photo',
                     'grade', 'categorie_combat', 'date_crea', 'date_last_modif')
     ordering = ('adherent__nom_adh', 'saison')
-    list_filter = ('adherent__nom_adh', 'discipline__nom_discipl', 'grade__couleur',)
+    list_filter = ('saison', 'adherent__nom_adh', 'discipline__nom_discipl', 'grade__couleur',)
 
 
 @admin.register(Famille)
@@ -47,7 +47,8 @@ class FamilleAdmin(admin.ModelAdmin):
 @admin.register(Paiement)
 class PaiementAdmin(admin.ModelAdmin):
     list_display = ('famille', 'saison', 'montant_cotis', 'paye',)
-    ordering = ('famille', 'saison', )
+    ordering = ('famille__nom_famille', 'saison' )
+    list_filter = ('saison', 'famille__nom_famille', )
 
 
 @admin.register(HistoriquePaiement)

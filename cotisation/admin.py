@@ -6,22 +6,24 @@ admin.site.site_url = '/accueil/'
 
 @admin.register(Saison)
 class SaisonAdmin(admin.ModelAdmin):
-    list_display = ('saison', 'saison_actuelle')
-    list_editable = ('saison_actuelle',)
+    list_display = ('saison', 'saison_actuelle','saison_prochaine')
+    list_editable = ('saison_actuelle', 'saison_prochaine',)
 
 
 @admin.register(Categorie)
 class CategorieAdmin(admin.ModelAdmin):
-    list_display = ('nom_catg', 'etudiant', 'age_inf_catg', 'age_sup_catg', 'ordre_affichage','saison')
+    list_display = ('nom_catg', 'etudiant', 'code_catg', 'age_inf_catg', 'age_sup_catg', 'ordre_affichage', 'saison')
     list_editable = ('ordre_affichage',)
     ordering = ('ordre_affichage',)
+    list_filter = ('saison',)
 
 
 @admin.register(Discipline)
 class DisciplineAdmin(admin.ModelAdmin):
-    list_display = ('nom_discipl', 'ordre_affichage','saison')
+    list_display = ('nom_discipl', 'code_discipl', 'ordre_affichage','saison')
     list_editable = ('ordre_affichage',)
     ordering = ('ordre_affichage',)
+    list_filter = ('saison',)
 
 
 @admin.register(Tarif)
@@ -29,7 +31,11 @@ class TarifAdmin(admin.ModelAdmin):
     save_on_top = True
     list_display = ('categorie', 'discipline', 'tarif_nouveau', 'tarif_ancien', 'saison', 'code_tarif')
     list_editable = ('tarif_nouveau','tarif_ancien')
-    list_filter = ('categorie', 'discipline', 'saison',)
+    list_filter = (
+        ('categorie',  admin.RelatedOnlyFieldListFilter),
+        ('discipline',  admin.RelatedOnlyFieldListFilter),
+        ('saison',  admin.RelatedOnlyFieldListFilter),
+    )
     ordering = ('categorie', 'discipline', 'saison',)
     list_per_page = 20
 

@@ -12,7 +12,6 @@ def reduc_famille(nb_personnes, reinscription, saison):
             exclude(condition_reduc=None).aggregate(Max('condition_reduc')).values():
         nb_personnnes_reduc_max = tr
 
-
     if nb_personnes >= int(nb_personnnes_reduc_max):
         nb_personnes = nb_personnnes_reduc_max
 
@@ -56,6 +55,7 @@ def tarif_calcul (code_tarif, saison, reinscription):
         if reinscription == '1':  # réinscription d'un ancien adhérent
             if i['tarif_ancien']:  # tarif ancien adhérent
                 tarif = i['tarif_ancien']
+                print('je suis dans le tarif ancien')
             else:  # si pas de tarif ancien proposé, on prend le tarif nouvel adhérent
                 tarif = i['tarif_nouveau']
         else:  # nouvel adhérent

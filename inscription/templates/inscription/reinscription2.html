@@ -7,13 +7,15 @@
 {% block content %}
 
     <!-- TITRE DE LA PAGE -->
-    <div class="h2 text-center mt-3">
-        Fiche de réinscription pour la saison {{ saison_actuelle }}
+    <div class="h2 text-center mt-3 mb-5">
+        Fiche de réinscription de <span class="text-primary">{{ nom_adherent }}</span> pour la saison {{ saison_prochaine }}
     </div>
 
     <!-- FORMULAIRE D'INSCRIPTION NOUVEL ADHERENT  -->
     <form class="mx-auto" action="{% url 'reinscription' %}" method="post" style="width:800px">
         {% csrf_token %}
+
+        <input name="code_famille" type="hidden" value="{{ code_famille }}" id="code_famille_id">
 
         {% for membre in person_selected %}
             <input name="person_selected" type="hidden" value="{{ membre }}" id="{{ membre }}">
@@ -32,9 +34,14 @@
         <div class="row my-1">
             <div class="col-md-4 text-start lead">Informations adhérent</div>
             <div class="col-md-8 text-start">
-              <input class="form-check-input" type="checkbox" checked>
-                <b>Vérifiez vos données.</b> Pour corriger, cliquez sur le bouton "Corriger mes données" en
-                bas de la page.
+                <input class="form-check-input" type="checkbox" checked>
+                <b>Vérifiez vos données.</b>
+                {% if person_selected|length == 1 %}
+                    Si tout est correct, procédez à l'inscription en cliquant sur "Terminer l'inscription".
+                {% else %}
+                    Si tout est correct, cliquez sur "Page suivante" pour passer à l'inscription de la personne suivante.
+                {% endif %}
+                Si vous voulez changer des informations, cliquez sur le bouton "Corriger mes données".
             </div>
         </div>
         <div class="border p-3">
@@ -148,7 +155,7 @@
         </div>
 
         <!-- PARTIE INFORMATIONS CONTACT  -->
-        <div class="lead my-1">Informations personne contact</div>
+        <div class="lead my-3">Informations personne contact</div>
         <div class="border p-3">
             <!-- nom prénom contact principal-->
             <div class="row align-items-center">
@@ -229,11 +236,15 @@
                 </script>
 
         <div class="text-center mb-3">
-            <button type="submit" class="btn btn-danger me-3" name="corrige" value="Corriger">Corriger mes données</button>
             {% if enabled == 'false' %}
-                <button type="submit" class="btn btn-danger me-3" name="suivant" value="Continuer">Page suivante</button>
+                <button type="submit" class="btn btn-danger me-3" name="corrige" value="Corriger">Corriger mes données</button>
+                {% if person_selected|length == 1 %}
+                    <button type="submit" class="btn btn-danger me-3" name="inscrire" value="Enregistrer">Terminer l'inscription</button>
+                {% else %}
+                    <button type="submit" class="btn btn-danger me-3" name="inscrire" value="Continuer">Inscrire & personne suivante</button>
+                {% endif %}
             {% else %}
-                <button type="submit" class="btn btn-danger me-3" name="enregistre" value="Continuer">Enregistrer et page suivante</button>
+                <button type="submit" class="btn btn-danger me-3" name="inscrire" value="Continuer">Inscrire</button>
             {% endif %}
 <!--            <a class="btn btn-danger" href="{% url 'reinscription' %}" name="corrige">Corriger mes données</a>-->
         </div>
