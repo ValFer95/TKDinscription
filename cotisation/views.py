@@ -7,7 +7,6 @@ from cotisation.models import Saison
 def simul_cotisation(request):
 
     saison_actuelle = Saison.objects.get(saison_actuelle=True)
-    saison_prochaine = Saison.objects.get(saison_prochaine=True)
 
     if request.method == 'GET':
         #print('méthode get')
@@ -18,13 +17,12 @@ def simul_cotisation(request):
     else :
         # print('méthode post')
         form = SimulCotisForm(request.POST)
-        cotis_annuelle, nb_personnes, reinscription = calcul(request.POST, saison_prochaine.saison)
+        cotis_annuelle, nb_personnes, reinscription = calcul(request.POST, saison_actuelle.saison)
 
         # print("cotis_annuelle :", cotis_annuelle)
 
     context = {
         'saison_actuelle' : saison_actuelle,
-        'saison_prochaine': saison_prochaine,
         'form': form,
         'nb_personnes' : nb_personnes,
         'reinscription' : reinscription,
@@ -35,8 +33,5 @@ def simul_cotisation(request):
 
 
 def accueil(request):
-    # saison_actuelle = Saison.objects.get(saison_actuelle=True)
-    # saison_prochaine = Saison.objects.get(saison_prochaine=True)
-    saison_actuelle = request.session.get('saison_actuelle', Saison.objects.get(saison_actuelle=True))
-    saison_prochaine = request.session.get('saison_prochaine', Saison.objects.get(saison_prochaine=True))
-    return render(request, 'accueil.html', {'saison_actuelle':saison_actuelle, 'saison_prochaine':saison_prochaine} )
+    saison_actuelle = Saison.objects.get(saison_actuelle=True)
+    return render(request, 'accueil.html', {'saison_actuelle': saison_actuelle,} )

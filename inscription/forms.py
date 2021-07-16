@@ -30,11 +30,9 @@ class GradeFormSelected(forms.ModelForm):
         exclude = ('keup',)
 
 
-saison_prochaine = Saison.objects.get(saison_prochaine=True)
-
 class DisciplineForm(forms.ModelForm):
     # discipline = forms.ModelChoiceField(queryset=Discipline.objects.all().order_by('ordre_affichage').distinct())
-    discipline = forms.ModelChoiceField(queryset=Discipline.objects.filter(saison=saison_prochaine).order_by('ordre_affichage'))
+    discipline = forms.ModelChoiceField(queryset=Discipline.objects.filter(saison__saison_actuelle=True).order_by('ordre_affichage'))
     class Meta:
         model = Discipline
         fields = ['discipline', ]

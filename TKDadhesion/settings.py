@@ -142,4 +142,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# Email settings ONLY FOR TEST PURPOSE
+EMAIL_HOST = 'localhost'    # production : 'tkd.vfeapps.fr'
+EMAIL_PORT = '1025'         # production : 465
+EMAIL_HOST_USER = ''        # mudoclubarg@tkd.vfeapps.fr
+EMAIL_HOST_PASSWORD = ''    # variable d'environnement ?
+EMAIL_USE_TLS = False       # True
+# EMAIL_USE_SSL = False     # False
+
+
 from TKDadhesion.local_settings import *

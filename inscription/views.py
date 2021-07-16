@@ -2,16 +2,16 @@ from django.shortcuts import render
 from inscription.forms import AdherentForm, GradeForm, ContactForm, DisciplineForm, DisciplineFormSelected, GradeFormSelected
 from inscription.models import Contact, Adherent, Famille, Adherent_Saison, CategorieCombat, Grade, Paiement
 from cotisation.models import Saison, Categorie, Discipline
-from inscription.fonctions import crea_code_famille, calcul_cotis_adh, calcul_age_adh
+from inscription.fonctions import crea_code_famille, calcul_cotis_adh, calcul_age_adh, envoi_mail
 from cotisation.fonctions import reduc_famille, appliq_reduc
 from django.db import transaction
 from datetime import date
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Max
 
 # formulaire d'aiguillage entre inscrition et réinscription
 def intro_inscription(request):
     saison_actuelle = Saison.objects.get(saison_actuelle=True)
-    saison_prochaine = Saison.objects.get(saison_prochaine=True)
     famille_match = True
     famille_inscrite = False
     code_famille = ""
@@ -27,7 +27,7 @@ def intro_inscription(request):
             # print ('famille connue')
             # si aucune ligne n'existe dans la table paiement pour la saison à venir, c'est que la famille n'estpas encore inscrite
 
-            if Paiement.objects.filter(famille__nom_famille=code_famille, saison=saison_prochaine).count() == 0:
+            if Paiement.objects.filter(famille__nom_famille=code_famille, saison=saison_actuelle).count() == 0:
                 # récupération des membres de la famille connue en base hors saison suf si déjà inscrite à la saison à venir
                 query_set_mb_fam = Adherent.objects.values('nom_adh', 'prenom_adh', 'pk').filter(famille__nom_famille=code_famille)
                 #query_set_mb_fam = Adherent.objects.filter(famille__nom_famille=code_famille)
@@ -50,7 +50,6 @@ def intro_inscription(request):
 
     context = {
         'saison_actuelle' : saison_actuelle,
-        'saison_prochaine': saison_prochaine,
         'famille_match' : famille_match,
         'famille_inscrite' : famille_inscrite,
         'code_famille' : code_famille,
@@ -63,7 +62,6 @@ def intro_inscription(request):
 def reinscription(request):
 
     saison_actuelle = Saison.objects.get(saison_actuelle=True)
-    saison_prochaine = Saison.objects.get(saison_prochaine=True)
 
     cotis_adh = 0
     list_nom = ''
@@ -156,19 +154,19 @@ def reinscription(request):
         # enregistrement en base de données
         # récupération de la catégorie de l'Adhérent (adulte, étudiant, enfant, ado, baby)
         categorie_adh = Categorie.objects.get(age_inf_catg__lte=age_adherent - 1, age_sup_catg__gte=age_adherent - 1,
-                                              saison=saison_prochaine, etudiant=etudiant_verif)
+                                              saison=saison_actuelle, etudiant=etudiant_verif)
 
         # récupération de la catégorie de combat
         categorie_combat = CategorieCombat.objects.get(age_min__lte=age_adherent, age_max__gte=age_adherent)
 
         # création de la ligne dans la table Adherent_saison
         if grade:
-            Adherent_Saison.objects.create(adherent=info_adherent, saison=saison_prochaine,
+            Adherent_Saison.objects.create(adherent=info_adherent, saison=saison_actuelle,
                                            grade=grade, categorie=categorie_adh,
                                            categorie_combat=categorie_combat, discipline=discipline
                                            )
         else:
-            Adherent_Saison.objects.create(adherent=info_adherent, saison=saison_prochaine,
+            Adherent_Saison.objects.create(adherent=info_adherent, saison=saison_actuelle,
                                            categorie=categorie_adh,
                                            categorie_combat=categorie_combat, discipline=discipline
                                            )
@@ -176,7 +174,7 @@ def reinscription(request):
         # génération du Code Tarification qui permet d'aller chercher le tarif de l'adhérent selon son age et la discipline
         code_tarification = categorie_adh.code_catg + discipline.code_discipl
         # calcul de la cotisation pour l'adhérent et enregistrement en variable de session
-        cotis_adh = int(calcul_cotis_adh(code_tarification, saison_prochaine, '1'))
+        cotis_adh = int(calcul_cotis_adh(code_tarification, saison_actuelle, '1'))
         # création de la variable de session si elle n'existe pas
         cotis_adh_sum = request.session.get('cotis_adh_sum', 0)
         request.session['cotis_adh_sum'] = cotis_adh + int(cotis_adh_sum)
@@ -215,7 +213,7 @@ def reinscription(request):
             person_selected.remove(request.POST['id_treated_person'])
         else:
             # récupération du taux de réduction valable pour la famille
-            taux_reduc = reduc_famille(request.session['nb_personnes'], 1, saison_prochaine)
+            taux_reduc = reduc_famille(request.session['nb_personnes'], 1, saison_actuelle)
             cotis_adh = appliq_reduc(taux_reduc, request.session['cotis_adh_sum'])
             print("nb_personnes :", request.session['nb_personnes'])
             print("taux_reduc :", taux_reduc)
@@ -234,7 +232,7 @@ def reinscription(request):
             # enregistrement montant de la cotisation dans la table Paiement
             le_code_famille_svg = request.session['le_code_famille_svg']
             info_famille = Famille.objects.get(nom_famille=le_code_famille_svg)
-            Paiement.objects.create(famille=info_famille, saison=saison_prochaine, montant_cotis=cotis_adh)
+            Paiement.objects.create(famille=info_famille, saison=saison_actuelle, montant_cotis=cotis_adh)
 
             # suppression des variables de session
             del request.session['cotis_adh_sum']
@@ -262,11 +260,14 @@ def reinscription(request):
     # récupération des infos de l'adherent
     info_adherent = Adherent.objects.get(pk=id_treated_person)
     info_contact = Contact.objects.get(adherent__pk=id_treated_person)
-    info_discipline = Discipline.objects.get(adherent_saison__adherent=id_treated_person, saison=saison_actuelle,
-                                             adherent_saison__saison=saison_actuelle)
+    info_discipline = Discipline.objects.filter(adherent_saison__adherent=id_treated_person).\
+        order_by('-adherent_saison__pk')[0] # ordonner par l'identifiant de table adherent_saison permet de sélectionner
+                                            # la dernière saison enregistrée et [0] pour faire un SELECT TOP 1
 
     try:
-        info_grade = Grade.objects.get(adherent_saison__adherent=id_treated_person, adherent_saison__saison=saison_actuelle)
+        info_grade = Grade.objects.filter(adherent_saison__adherent=id_treated_person).\
+            order_by('-adherent_saison__pk')[0] # ordonner par l'identifiant de table adherent_saison permet de sélectionner
+                                            # la dernière saison enregistrée et [0] pour faire un SELECT TOP 1
     except ObjectDoesNotExist:
         info_grade = None
 
@@ -289,7 +290,6 @@ def reinscription(request):
 
     context = {
         'saison_actuelle' : saison_actuelle,
-        'saison_prochaine': saison_prochaine,
         'person_selected' : person_selected,
         'id_treated_person' : id_treated_person,
         'nom_adherent' : nom_adherent,
@@ -313,7 +313,6 @@ def reinscription(request):
 @transaction.atomic
 def inscription(request):
     saison_actuelle = Saison.objects.get(saison_actuelle=True)
-    saison_prochaine = Saison.objects.get(saison_prochaine=True)
 
     page_html_suivante = "inscription/inscription.html"
     cotis_adh = 0
@@ -396,7 +395,7 @@ def inscription(request):
 
             # récupération de la catégorie de l'Adhérent (adulte, étudiant, enfant, ado, baby)
             categorie_adh = Categorie.objects.get(age_inf_catg__lte=age_adherent-1, age_sup_catg__gte=age_adherent-1,
-                                                           saison=saison_prochaine, etudiant=request.POST['etudiant'])
+                                                           saison=saison_actuelle, etudiant=request.POST['etudiant'])
 
             # récupération de la catégorie de combat
             categorie_combat = CategorieCombat.objects.get(age_min__lte=age_adherent, age_max__gte=age_adherent)
@@ -412,12 +411,12 @@ def inscription(request):
 
             # enregistrement des infos Adhérent en base de données Adherent_Saison
             if grade:
-                Adherent_Saison.objects.create(adherent=info_adherent, saison= saison_prochaine,
+                Adherent_Saison.objects.create(adherent=info_adherent, saison= saison_actuelle,
                                                grade=grade, categorie=categorie_adh,
                                                categorie_combat=categorie_combat, discipline=discipline
                                                )
             else:
-                Adherent_Saison.objects.create(adherent=info_adherent, saison= saison_prochaine,
+                Adherent_Saison.objects.create(adherent=info_adherent, saison= saison_actuelle,
                                                categorie=categorie_adh,
                                                categorie_combat=categorie_combat, discipline=discipline
                                                )
@@ -426,7 +425,7 @@ def inscription(request):
             code_tarification = categorie_adh.code_catg + discipline.code_discipl
             #print('code_tarification : ', code_tarification)
             # calcul de la cotisation pour l'adhérent
-            cotis_adh = calcul_cotis_adh(code_tarification, saison_prochaine, 0)
+            cotis_adh = calcul_cotis_adh(code_tarification, saison_actuelle, 0)
 
             # remplissage des listes nom des adhérents, discipline et cotsation de l'adhérent pour affichage en fin d'inscription
             list_nom = request.POST['list_nom']
@@ -455,7 +454,7 @@ def inscription(request):
             if request.POST['Enrg'] == 'Terminer':
                 if request.POST['cotis_adh'] != '0':
                     # récupération du taux de réduction valable pour la famille
-                    taux_reduc = reduc_famille(nb_personnes, 0, saison_prochaine)
+                    taux_reduc = reduc_famille(nb_personnes, 0, saison_actuelle)
                     #cotis_adh = cotis_adh * ((100 - int(taux_reduc))/100)
                     cotis_adh = appliq_reduc(taux_reduc, cotis_adh)
                     #print("nb_personnes :", nb_personnes)
@@ -471,9 +470,13 @@ def inscription(request):
                     list_cotisation = list_cotisation.split('*')
 
                 # enregistrement montant de la cotisation dans la table Paiement
-                Paiement.objects.create(famille=info_famille, saison=saison_prochaine, montant_cotis=cotis_adh)
+                Paiement.objects.create(famille=info_famille, saison=saison_actuelle, montant_cotis=cotis_adh)
 
                 page_html_suivante = "inscription/fin_inscription.html"
+
+                # envoi du mail de synthèse en utilisant le mail choisi pour recevoir les infos
+                envoi_mail('toto', 'fernandesval@laposte.net')
+
             else:
                 page_html_suivante = "inscription/inscription.html"
                 formAdh = AdherentForm(initial={"adresse":request.POST['adresse'],"cp":request.POST['cp'],
@@ -488,7 +491,6 @@ def inscription(request):
 
     context = {
         'saison_actuelle': saison_actuelle,
-        'saison_prochaine': saison_prochaine,
         'formAdh': formAdh,
         'formGrade': formGrade,
         'formContact' : formContact,

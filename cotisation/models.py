@@ -4,7 +4,6 @@ from django.core.validators import MinValueValidator
 class Saison(models.Model):
     saison = models.CharField(max_length=12, verbose_name="Saison")
     saison_actuelle = models.BooleanField(default=False)
-    saison_prochaine = models.BooleanField(default=False)
 
     def __str__(self):
         return self.saison

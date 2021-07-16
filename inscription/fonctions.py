@@ -1,6 +1,7 @@
 from random import choice, randrange
 from cotisation.fonctions import tarif_calcul, reduc_une_personne, reduc_famille, appliq_reduc
 from datetime import date
+from django.core.mail import send_mail
 
 suffixe = ['&', '#', '@', '*', '-', '$', '%']
 
@@ -25,3 +26,14 @@ def calcul_age_adh(ddn):
     ddn_split = ddn.split('/')
     age_adherent = int((date.today().year + 1)) - int(ddn_split[2])
     return age_adherent
+
+
+def envoi_mail(name, email):
+    message = "MUDO inscription"
+    send_mail(
+        'Confirmation inscription taekwondo MUDO club argenteuil', # objet du mail
+        message, # message
+        'sender@mudo.net', # from email (envoyeur)
+        [email], # to mail (destinataire)
+    )
+    return 'ok'

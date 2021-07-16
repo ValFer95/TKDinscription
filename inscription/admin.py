@@ -35,7 +35,12 @@ class Adherent_SaisonAdmin(admin.ModelAdmin):
     list_display = ('adherent', 'saison', 'categorie', 'discipline', 'certif_med', 'photo',
                     'grade', 'categorie_combat', 'date_crea', 'date_last_modif')
     ordering = ('adherent__nom_adh', 'saison')
-    list_filter = ('saison', 'adherent__nom_adh', 'discipline__nom_discipl', 'grade__couleur',)
+    list_filter = (
+        ('saison',  admin.RelatedOnlyFieldListFilter),
+        'adherent__nom_adh',
+        'discipline__nom_discipl',
+        'grade__couleur',
+    )
 
 
 @admin.register(Famille)

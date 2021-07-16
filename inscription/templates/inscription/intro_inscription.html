@@ -8,7 +8,7 @@
 
     <!-- TITRE DE LA PAGE -->
     <div class="h2 text-center mt-3 mb-5">
-        Inscription ou ré-inscription pour la saison {{ saison_prochaine }}
+        Inscription ou ré-inscription pour la saison {{ saison_actuelle }}
     </div>
 
     <!-- DEMANDE DE REINSCRIPTION DES ADHERENTS 2020-2021 -->
@@ -26,13 +26,13 @@
               <!-- ALERTE FAMILLE DEJA INSCRITE pour la saison à venir  -->
               {% if famille_inscrite %}
                   <div class="alert alert-danger">
-                      <strong> La famille {{ code_famille }} est déjà inscrite pour la saison {{ saison_prochaine }}.</strong>
+                      <strong> La famille {{ code_famille }} est déjà inscrite pour la saison {{ saison_actuelle }}.</strong>
                   </div>
               {% endif %}
 
                 <div class="row align-items-center">
                     <div class="col-sm-8 text-start">
-                        <b>Pour la réinscription des adhérents saison {{ saison_actuelle }}</b>, saisir le code famille reçu
+                        <b>Pour la réinscription des adhérents de la saison dernière</b>, saisir le code famille reçu
                         par mail (y compris pour inscrire un nouveau membre de la famille) :
                     </div>
                     <div class="col-sm-3 text-center">
