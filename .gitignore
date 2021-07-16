@@ -1,5 +1,7 @@
 /.idea/
 /venv/
+/TKDadhesion/__pycache__/
+/cotisation/__pycache__/
 /__pycache__/
 /tmp/
 notes.txt
