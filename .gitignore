@@ -1,7 +1,8 @@
 /.idea/
-/venv/
 */__pycache__/
 /__pycache__/
+*.pyc
+/venv/
 /tmp/
 notes.txt
 avancement.txt
