@@ -15,6 +15,5 @@ DATABASES = {
 EMAIL_HOST = 'tkd.vfeapps.fr'
 EMAIL_PORT = '465'
 EMAIL_HOST_USER = 'mudoclubarg@tkd.vfeapps.fr'
-EMAIL_HOST_PASSWORD = ''    # variable d'environnement ?
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False

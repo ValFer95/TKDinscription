@@ -4,6 +4,7 @@
 *.pyc
 /venv/
 /tmp/
+/fixtures/*
 notes.txt
 avancement.txt
 git status 060621.docx
