@@ -33,7 +33,8 @@ def envoi_mail(name, email):
     send_mail(
         'Confirmation inscription taekwondo MUDO club argenteuil', # objet du mail
         message, # message
-        'sender@mudo.net', # from email (envoyeur)
-        [email], # to mail (destinataire)
+        'mudoclub@tkdinscription.vfeapps.fr', # from email (envoyeur)
+        [email], # to mail (destinataire),
+        fail_silently = False
     )
     return 'ok'

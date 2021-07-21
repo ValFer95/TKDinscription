@@ -1,7 +1,7 @@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['tkdinscription.vfeapps.fr']
 
 DATABASES = {
     'default': {
@@ -10,10 +10,9 @@ DATABASES = {
     }
 }
 
-
 # Email settings ONLY FOR TEST PURPOSE
-EMAIL_HOST = 'tkd.vfeapps.fr'
-EMAIL_PORT = '465'
-EMAIL_HOST_USER = 'mudoclubarg@tkd.vfeapps.fr'
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
+EMAIL_HOST = 'umbriel.o2switch.net'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'mudoclub@tkdinscription.vfeapps.fr'
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True

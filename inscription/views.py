@@ -475,7 +475,7 @@ def inscription(request):
                 page_html_suivante = "inscription/fin_inscription.html"
 
                 # envoi du mail de synthèse en utilisant le mail choisi pour recevoir les infos
-                # envoi_mail('toto', 'fernandesval@laposte.net')
+                envoi_mail('toto', 'fernandesval@laposte.net')
 
             else:
                 page_html_suivante = "inscription/inscription.html"
