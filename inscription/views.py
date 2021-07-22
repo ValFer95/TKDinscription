@@ -103,8 +103,29 @@ def reinscription(request):
         # si le formulaire a été rendu enabled
         if formAdh.is_valid() and formContact.is_valid() :
             # édition des mises à jour dans Adherent et Contact
-            formAdh.save()
-            formContact.save()
+            # test pour savoir si un nouveau contact a été saisi
+            if Contact.objects.filter(nom_contact=request.POST['nom_contact'],
+                                      prenom_contact=request.POST['prenom_contact'],
+                                      email_contact=request.POST['email_contact']).count() == 0:
+                # on crée un nouveau contact en base, on récupère son id et on fait le lien entre l'adhérent et le nouveau contact
+                Contact.objects.create(nom_contact=request.POST['nom_contact'], prenom_contact=request.POST['prenom_contact'],
+                                       email_contact=request.POST['email_contact'], numtel_contact1=request.POST['numtel_contact1'],
+                                       numtel_contact2=request.POST['numtel_contact2'], numtel_contact3=request.POST['numtel_contact3']
+                                       )
+
+                # avant enregistrement de l'adhérent, récupération du contact associé
+                newAdh = formAdh.save(commit=False)
+                info_contact = Contact.objects.get(nom_contact=request.POST['nom_contact'],
+                                                   prenom_contact=request.POST['prenom_contact'],
+                                                   email_contact=request.POST['email_contact'])
+                newAdh.contact = info_contact
+                # enregistrement de l'adhérent dans la table Adhérent
+                formAdh.save()
+
+            # si le contact existe déjà, on met à jour les données (numéro téléphone..)
+            else :
+                formContact.save()
+                formAdh.save()
 
             # calcul age adhérent au 31 décembre de la saison suivante
             age_adherent = calcul_age_adh(request.POST['ddn'])
@@ -265,9 +286,13 @@ def reinscription(request):
                                             # la dernière saison enregistrée et [0] pour faire un SELECT TOP 1
 
     try:
-        info_grade = Grade.objects.filter(adherent_saison__adherent=id_treated_person).\
-            order_by('-adherent_saison__pk')[0] # ordonner par l'identifiant de table adherent_saison permet de sélectionner
-                                            # la dernière saison enregistrée et [0] pour faire un SELECT TOP 1
+        if Grade.objects.filter(adherent_saison__adherent=id_treated_person).exists():
+            info_grade = Grade.objects.filter(adherent_saison__adherent=id_treated_person).\
+                 order_by('-adherent_saison__pk')[0] # ordonner par l'identifiant de table adherent_saison permet de sélectionner
+                                               # la dernière saison enregistrée et [0] pour faire un SELECT TOP 1
+        else :
+            info_grade = None
+
     except ObjectDoesNotExist:
         info_grade = None
 
@@ -475,7 +500,7 @@ def inscription(request):
                 page_html_suivante = "inscription/fin_inscription.html"
 
                 # envoi du mail de synthèse en utilisant le mail choisi pour recevoir les infos
-                envoi_mail('toto', 'fernandesval@laposte.net')
+                envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famille, request.POST['email_contact'])
 
             else:
                 page_html_suivante = "inscription/inscription.html"
