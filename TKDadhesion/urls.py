@@ -24,6 +24,7 @@ urlpatterns = [
     path('q_inscription/', inscript_views.intro_inscription, name="q_inscription"),
     path('inscription/', inscript_views.inscription, name="inscription"),
     path('reinscription/', inscript_views.reinscription, name="reinscription"),
+    path('inscription_autre_mb_famille/', inscript_views.fin_reinscription, name="fin_reinscription"),
     path('accueil/', cotis_views.accueil, name='accueil'),
     path('', cotis_views.accueil),
 ]

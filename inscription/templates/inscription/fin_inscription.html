@@ -42,7 +42,7 @@
                 {% endfor %}
             </tr>
             <tr>
-              <th scope="row">Cotisation</th>
+              <th scope="row">Cotisation {% if list_nom|length > 1 %} (avant réduction famille) {% endif %}</th>
                 {% for i in list_cotisation %}
                     <td>{{ i }}€</td>
                 {% endfor %}
@@ -57,14 +57,15 @@
                 <br>Vous pouvez payer par chèque, virement, liquide {% if list_nom|length > 1 %}en 3 fois{% endif %}.
             </div>
             <div class=" text-center mb-2">
-                Pour terminer l'inscription, merci d'apporter au club une enveloppe portant la mention <strong>{{ code_famille }}</strong> et contenant :
+                Pour terminer l'inscription, merci d'apporter au club une enveloppe portant votre nom, la mention <strong>{{ code_famille }}</strong> et contenant :
             </div>
             <div class=" text-center">
                 <ol class="list-group list-group-numbered w-50 mx-auto">
                   <li class="list-group-item d-flex justify-content-between align-items-start">
                     <div class="ms-2 me-auto text-start">
                       <div class="fw-bold">Le moyen de paiement de la cotisation</div>
-                      chèques, liquide ou l'ordre de virement effectué
+                      chèques, liquide ou l'ordre de virement effectué.
+                        <br> Les chèques seront déposés le 5 de chaque mois en cas de règlement en plusieurs chèques.
                     </div>
                   </li>
                   <li class="list-group-item d-flex justify-content-between align-items-start">
@@ -82,6 +83,13 @@
                 </ol>
             </div>
 
+            <div class=" text-center mb-2">
+                Vous recevrez ces informations par mail.
+            </div>
+
+            <div class=" text-center mb-2 mt-2">
+                <a class="btn btn-danger" href="{% url 'accueil' %}" name="corrige">Retour à l'accueil</a>
+            </div>
 
     </div>
 

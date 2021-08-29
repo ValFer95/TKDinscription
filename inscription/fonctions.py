@@ -7,7 +7,7 @@ suffixe = ['&', '#', '@', '*', '-', '$', '%']
 
 # CREATION D'UN CODE FAMILLE QUI SERA LA CLEF DE GROUPEMENT DES ADHERENTS D'UNE MEME FAMILLE
 def crea_code_famille(nom_adh):
-    code_famille = nom_adh + choice(suffixe) + str(randrange(1,99))
+    code_famille = nom_adh.capitalize() + choice(suffixe) + str(randrange(1,99))
     return code_famille
 
 
@@ -41,10 +41,12 @@ def envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famil
     message += "2- Un certificat médical à la pratique du taekwondo pour chaque membre de la famille, \n"
     message += "3- Une photo d'identité pour chaque membre de la famille avec le nom de l'adhérent au dos. \n\n"
 
+    message += "Les chèques seront déposés le 5 de chaque mois en cas de règlement en plusieurs chèques, \n\n"
+
     message += "Le Mudo Club Argenteuil"
 
-    print('email:', email)
-    print('message :' + message)
+    # print('email:', email)
+    # print('message :' + message)
 
     send_mail(
         'Confirmation inscription taekwondo MUDO Club Argenteuil', # objet du mail
@@ -54,3 +56,21 @@ def envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famil
         fail_silently = False
     )
     return 'ok'
+
+
+# création de la liste des emails des destinataires du mail de récap des infos d'inscription
+def liste_dest_mail(list_email, age_adherent, email_adh, email_contact):
+
+    if list_email != '':
+        if age_adherent >= 18 and email_adh:
+            list_email = list_email + ',' + email_adh
+        else:
+            if list_email.count(email_contact) == 0:
+                list_email = list_email + ',' + email_contact
+    else :
+        if age_adherent >= 18 and email_adh:
+            list_email = email_adh
+        else:
+            list_email = email_contact
+
+    return list_email

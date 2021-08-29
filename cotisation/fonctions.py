@@ -55,7 +55,7 @@ def tarif_calcul (code_tarif, saison, reinscription):
         if reinscription == '1':  # réinscription d'un ancien adhérent
             if i['tarif_ancien']:  # tarif ancien adhérent
                 tarif = i['tarif_ancien']
-                print('je suis dans le tarif ancien')
+                # print('je suis dans le tarif ancien')
             else:  # si pas de tarif ancien proposé, on prend le tarif nouvel adhérent
                 tarif = i['tarif_nouveau']
         else:  # nouvel adhérent
@@ -92,15 +92,15 @@ def calcul(valeurs_post, saison):
     # *** APPLICATION DES REDUCTIONS ***
     if cotis_annuelle > 0:
         taux_reduc = reduc_une_personne(valeurs_post['reinscription'], saison)
-        print("taux_reduc avant :", taux_reduc)
+        # print("taux_reduc avant :", taux_reduc)
 
         if nb_personnes > 1:
             taux_famille = reduc_famille(nb_personnes, valeurs_post['reinscription'], saison)
-            print("taux_famille :", taux_famille)
+            # print("taux_famille :", taux_famille)
             taux_reduc += int(taux_famille)
 
-        print("taux_reduc après:", taux_reduc)
-        print("cotis_annuelle :", cotis_annuelle)
+        # print("taux_reduc après:", taux_reduc)
+        # print("cotis_annuelle :", cotis_annuelle)
 
         cotis_annuelle = appliq_reduc(taux_reduc, cotis_annuelle)
 

@@ -2,7 +2,7 @@ from django.shortcuts import render
 from inscription.forms import AdherentForm, GradeForm, ContactForm, DisciplineForm, DisciplineFormSelected, GradeFormSelected
 from inscription.models import Contact, Adherent, Famille, Adherent_Saison, CategorieCombat, Grade, Paiement
 from cotisation.models import Saison, Categorie, Discipline
-from inscription.fonctions import crea_code_famille, calcul_cotis_adh, calcul_age_adh, envoi_mail
+from inscription.fonctions import crea_code_famille, calcul_cotis_adh, calcul_age_adh, envoi_mail, liste_dest_mail
 from cotisation.fonctions import reduc_famille, appliq_reduc
 from django.db import transaction
 from datetime import date
@@ -67,6 +67,7 @@ def reinscription(request):
     list_nom = ''
     list_discipline = ''
     list_cotisation = ''
+    list_email = ''
     le_code_famille_svg = ''
     page_html_suivante = "inscription/reinscription2.html"
 
@@ -76,7 +77,7 @@ def reinscription(request):
     nb_personnes = request.session.get('nb_personnes', 0)
 
     id_treated_person = person_selected[0]
-    print('id_treated_person', id_treated_person)
+    # print('id_treated_person', id_treated_person)
 
     # pour affichage du nom de l'adhérent à l'écran
     query_set_nom_adh = Adherent.objects.values('nom_adh', 'prenom_adh').filter(pk=id_treated_person)
@@ -86,12 +87,12 @@ def reinscription(request):
 
     if "corrige" in request.POST:   # si la key "corrige" correspondant au bouton "Corriger mes données" est présent
         enabled = 'true'
-        #person_selected = request.POST['person_selected']
+        # print ("enabled activé")
+        # person_selected = request.POST['person_selected']
         # print('person_selected dans corrige', person_selected)
         # print('type - person_selected dans corrige', type(person_selected))
 
     elif "inscrire" in request.POST:    # pour enregistrer les modifications en BDD si l'utilisateur a cliqué sur "modifier mes données"
-
         # récupération des infos adherent et contact en base de données
         info_adherent = Adherent.objects.get(pk=request.POST['id_treated_person'])
         info_contact = Contact.objects.get(adherent__pk=request.POST['id_treated_person'])
@@ -100,13 +101,15 @@ def reinscription(request):
         formAdh = AdherentForm(request.POST or None, instance=info_adherent)
         formContact = ContactForm(request.POST or None, instance=info_contact)
 
+        if not (formAdh.is_valid() and formContact.is_valid()):
+            print("pb de formulaire")
+
         # si le formulaire a été rendu enabled
         if formAdh.is_valid() and formContact.is_valid() :
             # édition des mises à jour dans Adherent et Contact
             # test pour savoir si un nouveau contact a été saisi
-            if Contact.objects.filter(nom_contact=request.POST['nom_contact'],
-                                      prenom_contact=request.POST['prenom_contact'],
-                                      email_contact=request.POST['email_contact']).count() == 0:
+            if Contact.objects.filter(nom_contact=request.POST['nom_contact'].strip(),
+                                      prenom_contact=request.POST['prenom_contact'].strip()).count() == 0:
                 # on crée un nouveau contact en base, on récupère son id et on fait le lien entre l'adhérent et le nouveau contact
                 Contact.objects.create(nom_contact=request.POST['nom_contact'], prenom_contact=request.POST['prenom_contact'],
                                        email_contact=request.POST['email_contact'], numtel_contact1=request.POST['numtel_contact1'],
@@ -115,9 +118,9 @@ def reinscription(request):
 
                 # avant enregistrement de l'adhérent, récupération du contact associé
                 newAdh = formAdh.save(commit=False)
-                info_contact = Contact.objects.get(nom_contact=request.POST['nom_contact'],
-                                                   prenom_contact=request.POST['prenom_contact'],
-                                                   email_contact=request.POST['email_contact'])
+                info_contact = Contact.objects.get(nom_contact=request.POST['nom_contact'].strip(),
+                                                   prenom_contact=request.POST['prenom_contact'].strip(),
+                                                   email_contact=request.POST['email_contact'].strip())
                 newAdh.contact = info_contact
                 # enregistrement de l'adhérent dans la table Adhérent
                 formAdh.save()
@@ -149,7 +152,6 @@ def reinscription(request):
 
         # si le formulaire n'a pas été rendu enabled
         else:
-            print("formulaire pas ok !!!")
             # calcul de l'âge (en créant une fonction) et récupération de l'info étudiant
             query_set_adh = Adherent.objects.values('ddn', 'etudiant').filter(pk=request.POST['id_treated_person'])
             for mb in query_set_adh:
@@ -199,7 +201,7 @@ def reinscription(request):
         # création de la variable de session si elle n'existe pas
         cotis_adh_sum = request.session.get('cotis_adh_sum', 0)
         request.session['cotis_adh_sum'] = cotis_adh + int(cotis_adh_sum)
-        print(request.session['cotis_adh_sum'])
+        #print(request.session['cotis_adh_sum'])
 
         # remplissage des listes nom des adhérents, discipline et cotsation de l'adhérent pour affichage en fin d'inscription
         list_nom = request.session.get('list_nom', '')
@@ -209,22 +211,35 @@ def reinscription(request):
         else:
             # request.session['list_nom'] = request.POST['nom_adh'] + ' ' + request.POST['prenom_adh']
             request.session['list_nom'] = nom_adherent
-        print('list_nom:', request.session['list_nom'])
+        #print('list_nom:', request.session['list_nom'])
 
         list_discipline = request.session.get('list_discipline', '')
         if list_discipline != '':
             request.session['list_discipline'] = list_discipline + ',' + discipline.nom_discipl
         else:
             request.session['list_discipline'] = discipline.nom_discipl
-        print('list_discipline:', request.session['list_discipline'])
+        #print('list_discipline:', request.session['list_discipline'])
 
         list_cotisation = request.session.get('list_cotisation', '0')
         if list_cotisation != '0':
             request.session['list_cotisation'] = list_cotisation + ',' + str(cotis_adh)
         else:
             request.session['list_cotisation'] = str(cotis_adh)
-        print('list_cotisation:', request.session['list_cotisation'])
+        #print('list_cotisation:', request.session['list_cotisation'])
 
+        # récupération des adresses mail si l'adhérent les a modifiées
+        #print ("id_treated_person après : ", id_treated_person)
+        info_adherent_maj = Adherent.objects.get(pk=request.POST['id_treated_person'])
+        info_contact_maj = Contact.objects.get(adherent__pk=request.POST['id_treated_person'])
+        adher_email = info_adherent_maj.email_adh
+        contact_email = info_contact_maj.email_contact
+
+        #print("adher_email {} et contact_email {}".format(adher_email, contact_email))
+        #print('list_email AVANT la fonction liste_dest_mail:', list_email)
+
+        list_email = request.session.get('list_email', '')
+        request.session['list_email'] = liste_dest_mail(list_email, age_adherent, adher_email, contact_email)
+        #print('list_email APRES la fonction liste_dest_mail:', request.session['list_email'])
 
         request.session['nb_personnes'] = nb_personnes + 1
         enabled = 'false'
@@ -233,45 +248,18 @@ def reinscription(request):
         if len(person_selected) > 1:
             person_selected.remove(request.POST['id_treated_person'])
         else:
-            # récupération du taux de réduction valable pour la famille
-            taux_reduc = reduc_famille(request.session['nb_personnes'], 1, saison_actuelle)
-            cotis_adh = appliq_reduc(taux_reduc, request.session['cotis_adh_sum'])
-            print("nb_personnes :", request.session['nb_personnes'])
-            print("taux_reduc :", taux_reduc)
-            print('cotis_adh avant :', request.session['cotis_adh_sum'])
-            print('cotis_adh après :', cotis_adh)
-
-            list_nom = request.session['list_nom'].split(',')
-            list_discipline = request.session['list_discipline'].split(',')
-            list_cotisation = request.session['list_cotisation'].split(',')
-
-            # je demande à spliter sur "*" pour garder les mots ensemble
-            # list_nom = request.session['list_nom'].split('*')
-            # list_discipline = request.session['list_discipline'].split('*')
-            # list_cotisation = request.session['list_cotisation'].split('*')
-
-            # enregistrement montant de la cotisation dans la table Paiement
+            # on passe à la page inscription_autre_membre.html pour permettre l'inscription d'un nouveau membre de la famille
             le_code_famille_svg = request.session['le_code_famille_svg']
-            info_famille = Famille.objects.get(nom_famille=le_code_famille_svg)
-            Paiement.objects.create(famille=info_famille, saison=saison_actuelle, montant_cotis=cotis_adh)
-
-            # suppression des variables de session
-            del request.session['cotis_adh_sum']
-            del request.session['list_nom']
-            del request.session['list_discipline']
-            del request.session['list_cotisation']
-            del request.session['nb_personnes']
-            del request.session['le_code_famille_svg']
-
-            page_html_suivante = "inscription/fin_inscription.html"
+            page_html_suivante = "inscription/inscription_autre_membre.html"
 
     # arrivée sur le formulaire pour la 1ère fois (en provenance de reinscription.html def intro_inscription)
     else:
         # mise en variable de session du code famille
         le_code_famille_svg = request.session.get('le_code_famille_svg', '')
-        request.session['le_code_famille_svg'] = request.POST['code_famille']
+        request.session['le_code_famille_svg'] = request.POST['code_famille'].strip()
         enabled = 'false'
 
+    # après inscription en base de données, le 1er élément du tableau person_selected a été supprimé et on passe au prochain membre de la famille
     id_treated_person = person_selected[0]
     # pour affichage du nom de l'adhérent à l'écran
     query_set_nom_adh = Adherent.objects.values('nom_adh', 'prenom_adh').filter(pk=id_treated_person)
@@ -330,6 +318,80 @@ def reinscription(request):
         'list_nom': list_nom,
         'list_discipline': list_discipline,
         'list_cotisation': list_cotisation,
+        'list_email': list_email,
+    }
+
+    return render(request, page_html_suivante, context )
+
+# inscription d'un autre membre de la famille et fin de réinscription
+def fin_reinscription(request):
+
+    saison_actuelle = Saison.objects.get(saison_actuelle=True)
+    cotis_adh = request.session["cotis_adh_sum"]
+    nb_personnes = request.session['nb_personnes']
+
+    list_nom = request.session['list_nom']
+    list_discipline = request.session['list_discipline']
+    list_cotisation = request.session['list_cotisation']
+    le_code_famille_svg = request.session['le_code_famille_svg']
+    list_email = request.session['list_email']
+
+    # nécessaire pour afficher le formulaire d'inscription vide pour le nouveau membre
+    formAdh = AdherentForm()
+    formGrade = GradeForm()
+    formContact = ContactForm()
+    formDiscipline = DisciplineForm()
+
+    # l'utilisateur a cliqué sur le bouton Non (pas d'inscription d'un autre membre de la famille), on passe à la
+    # finalisation de l'inscription
+    if "non" in request.POST:
+
+        # récupération du taux de réduction valable pour la famille
+        taux_reduc = reduc_famille(request.session['nb_personnes'], 1, saison_actuelle)
+        cotis_adh = appliq_reduc(taux_reduc, request.session['cotis_adh_sum'])
+
+        # enregistrement montant de la cotisation dans la table Paiement
+        info_famille = Famille.objects.get(nom_famille=le_code_famille_svg)
+        Paiement.objects.create(famille=info_famille, saison=saison_actuelle, montant_cotis=cotis_adh)
+
+        list_nom = request.session['list_nom'].split(',')
+        list_discipline = request.session['list_discipline'].split(',')
+        list_cotisation = request.session['list_cotisation'].split(',')
+        le_code_famille_svg = request.session['le_code_famille_svg']
+        list_email = request.session['list_email'].split(',')
+
+        # print("liste des mails envoyés par messagerie:" , list_email)
+        # envoi du mail de synthèse en utilisant le mail choisi pour recevoir les infos
+        # envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famille, list_email)
+
+        page_html_suivante = "inscription/fin_inscription.html"
+    else :
+        # l'utilisateur veut inscrire une nouvelle personne
+        page_html_suivante = "inscription/inscription.html"
+
+    # suppression des variables de session
+    del request.session['cotis_adh_sum']
+    del request.session['list_nom']
+    del request.session['list_discipline']
+    del request.session['list_cotisation']
+    del request.session['nb_personnes']
+    del request.session['le_code_famille_svg']
+    del request.session['list_email']
+
+    context = {
+        'saison_actuelle': saison_actuelle,
+        'code_famille': le_code_famille_svg,
+        'cotis_adh': cotis_adh,
+        'nb_personnes': nb_personnes,
+        'list_nom': list_nom,
+        'list_discipline': list_discipline,
+        'list_cotisation': list_cotisation,
+        'list_email': list_email,
+
+        'formAdh': formAdh,
+        'formGrade': formGrade,
+        'formContact': formContact,
+        'formDiscipline': formDiscipline,
     }
 
     return render(request, page_html_suivante, context )
@@ -346,6 +408,7 @@ def inscription(request):
     list_nom = ''
     list_discipline = ''
     list_cotisation = ''
+    list_email = ''
 
     if request.method == 'GET':
         # affichage du fomulaire vide
@@ -372,39 +435,39 @@ def inscription(request):
             if request.POST['code_famille'] == '':
                 #print("création code famille")
                 # création d'un code famille pour regrouper les adhérents d'une même famille
-                code_famille = crea_code_famille(request.POST['nom_adh'])
+                code_famille = crea_code_famille(request.POST['nom_adh'].strip())
                 # création d'une nouvelle ligne dans la table Famille
                 Famille.objects.create(nom_famille=code_famille)
                 # Récupération de la ligne nouvellement insérée dans Famille
                 info_famille = Famille.objects.get(nom_famille=code_famille)
             else:
                 #print("code famille connu :", request.POST['code_famille'])
-                code_famille = request.POST['code_famille']
-                info_famille = Famille.objects.get(nom_famille=request.POST['code_famille'])
+                code_famille = request.POST['code_famille'].strip()
+                info_famille = Famille.objects.get(nom_famille=request.POST['code_famille'].strip())
 
             # enregistrement du contact
-            if request.POST['code_famille'] == '':
+            if request.POST['code_famille'].strip() == '':
                 # enregistrement du contact dans la base Contact
                 formContact.save()
             else:
                 # test pour savoir si le contact existe déjà en base
-                if Contact.objects.filter(nom_contact=request.POST['nom_contact'],
-                                                   prenom_contact=request.POST['prenom_contact'],
-                                                       email_contact = request.POST['email_contact']).count() == 0:
+                if Contact.objects.filter(nom_contact=request.POST['nom_contact'].strip(),
+                                                   prenom_contact=request.POST['prenom_contact'].strip(),
+                                                       email_contact = request.POST['email_contact'].strip()).count() == 0:
                     formContact.save()
 
             # avant enregistrement de l'adhérent, récupération du contact associé
             newAdh = formAdh.save(commit=False)
-            info_contact = Contact.objects.get(nom_contact=request.POST['nom_contact'],
-                                             prenom_contact=request.POST['prenom_contact'],
-                                            email_contact = request.POST['email_contact'])
+            info_contact = Contact.objects.get(nom_contact=request.POST['nom_contact'].strip(),
+                                             prenom_contact=request.POST['prenom_contact'].strip(),
+                                            email_contact = request.POST['email_contact'].strip())
             newAdh.contact = info_contact
             newAdh.famille = info_famille
             # enregistrement de l'adhérent dans la table Adhérent
             formAdh.save()
 
             # récupération des infos adhérent de la table Adherent
-            info_adherent = Adherent.objects.get(nom_adh=request.POST['nom_adh'], prenom_adh=request.POST['prenom_adh'])
+            info_adherent = Adherent.objects.get(nom_adh=request.POST['nom_adh'].strip(), prenom_adh=request.POST['prenom_adh'].strip())
 
             # calcul age adhérent au 31 décembre de la saison suivante
             ddn_split = request.POST['ddn'].split('/')
@@ -424,6 +487,7 @@ def inscription(request):
 
             # récupération de la catégorie de combat
             categorie_combat = CategorieCombat.objects.get(age_min__lte=age_adherent, age_max__gte=age_adherent)
+            #print(' categorie combat : {} et age : {} '.format(categorie_combat, age_adherent))
 
             # récupération du grade
             if request.POST['couleur'] != '':
@@ -455,9 +519,9 @@ def inscription(request):
             # remplissage des listes nom des adhérents, discipline et cotsation de l'adhérent pour affichage en fin d'inscription
             list_nom = request.POST['list_nom']
             if request.POST['list_nom'] != '':
-                list_nom = list_nom + ',' + request.POST['nom_adh'] + ' ' + request.POST['prenom_adh']
+                list_nom = list_nom + ',' + request.POST['nom_adh'].strip() + ' ' + request.POST['prenom_adh'].strip()
             else:
-                list_nom = request.POST['nom_adh'] + ' ' + request.POST['prenom_adh']
+                list_nom = request.POST['nom_adh'].strip() + ' ' + request.POST['prenom_adh'].strip()
 
             list_discipline = request.POST['list_discipline']
             if request.POST['list_discipline'] != '':
@@ -470,6 +534,11 @@ def inscription(request):
                 list_cotisation = list_cotisation + ',' + str(cotis_adh)
             else:
                 list_cotisation = str(cotis_adh)
+
+            list_email = request.POST['list_email']
+            list_email = liste_dest_mail(list_email, age_adherent, request.POST['email_adh'].strip(),
+                                                                request.POST['email_contact'].strip())
+            #print("list_email : ", list_email)
 
             # addition de cotisation de l'adhérent actuel et de la cotisation de l'adhérent inscrit juste avant
             if request.POST['cotis_adh'] != '0':
@@ -488,24 +557,27 @@ def inscription(request):
                     list_nom = list_nom.split(',')
                     list_discipline = list_discipline.split(',')
                     list_cotisation = list_cotisation.split(',')
+                    list_email = list_email.split(',')
 
                 else:   # je demande à spliter sur "*" pour garder les mots ensemble
                     list_nom = list_nom.split('*')
                     list_discipline = list_discipline.split('*')
                     list_cotisation = list_cotisation.split('*')
+                    list_email = list_email.split('*')
 
                 # enregistrement montant de la cotisation dans la table Paiement
                 Paiement.objects.create(famille=info_famille, saison=saison_actuelle, montant_cotis=cotis_adh)
 
                 page_html_suivante = "inscription/fin_inscription.html"
 
+                # print("list_email avant envoi des mails: ", list_email)
                 # envoi du mail de synthèse en utilisant le mail choisi pour recevoir les infos
-                envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famille, request.POST['email_contact'])
+                #envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famille, list_email)
 
             else:
                 page_html_suivante = "inscription/inscription.html"
-                formAdh = AdherentForm(initial={"adresse":request.POST['adresse'],"cp":request.POST['cp'],
-                                                "ville":request.POST['ville']})
+                formAdh = AdherentForm(initial={"adresse":request.POST['adresse'].strip(),"cp":request.POST['cp'].strip(),
+                                                "ville":request.POST['ville'].strip()})
                 formGrade = GradeForm()
                 formContact = ContactForm(request.POST)
                 formDiscipline = DisciplineForm()
@@ -526,6 +598,7 @@ def inscription(request):
         'list_nom': list_nom,
         'list_discipline': list_discipline,
         'list_cotisation' : list_cotisation,
+        'list_email' : list_email,
     }
 
     return render(request, page_html_suivante, context )

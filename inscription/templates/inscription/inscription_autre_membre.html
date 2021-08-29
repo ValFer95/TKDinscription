@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %}  Fin d'inscription  {% endblock %}
+
+{% block content %}
+
+    <!-- TITRE DE LA PAGE -->
+    <div class="h2 text-center mb-5">
+        Inscription d'un autre membre de la famille
+    </div>
+
+    <div class="container">
+
+      <form class="mx-auto" action="{% url 'fin_reinscription' %}" method="post" style="width:800px">
+        {% csrf_token %}
+
+        <div class="text-center mb-5">
+            <b>Voulez-vous inscrire un autre membre de la famille ?</b>
+        </div>
+
+        <div class="text-center mb-3">
+          <button type="submit" class="btn btn-danger me-3" name="oui" value="Enregistrer">Oui</button>
+          <button type="submit" class="btn btn-danger me-3" name="non" value="Enregistrer">Non</button>
+        </div>
+
+      </form>
+
+    </div>
+
+{% endblock %}
