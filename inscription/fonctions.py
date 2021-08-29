@@ -33,7 +33,7 @@ def envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famil
     for i in range(len(list_nom)):
         message += str(i+1) + '- ' + list_nom[i] + ' (' + list_discipline[i] + ') - tarif de :' + list_cotisation[i] + '€\n'
 
-    message += "\n La cotisation annuelle à régler est de " + str(cotis_adh) + "€. Vous avez bénéficié d'une réduction famille. \n \n"
+    message += "\n La cotisation annuelle à régler est de " + str(cotis_adh) + "€.\n \n"
 
     message += "Vous pouvez payer par chèque, virement, liquide en 3 fois.\n"
     message += "Pour terminer l'inscription, merci d'apporter au club une enveloppe portant la mention " + code_famille + " et contenant :\n"
