@@ -362,7 +362,7 @@ def fin_reinscription(request):
 
         # print("liste des mails envoyés par messagerie:" , list_email)
         # envoi du mail de synthèse en utilisant le mail choisi pour recevoir les infos
-        # envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famille, list_email)
+        envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famille, list_email)
 
         page_html_suivante = "inscription/fin_inscription.html"
     else :
@@ -572,7 +572,7 @@ def inscription(request):
 
                 # print("list_email avant envoi des mails: ", list_email)
                 # envoi du mail de synthèse en utilisant le mail choisi pour recevoir les infos
-                #envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famille, list_email)
+                envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famille, list_email)
 
             else:
                 page_html_suivante = "inscription/inscription.html"
