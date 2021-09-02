@@ -36,7 +36,7 @@ def envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famil
     message += "\n La cotisation annuelle à régler est de " + str(cotis_adh) + "€.\n \n"
 
     message += "Vous pouvez payer par chèque, virement, liquide en 3 fois.\n"
-    message += "Pour terminer l'inscription, merci d'apporter au club une enveloppe portant la mention " + code_famille + " et contenant :\n"
+    message += "Pour terminer l'inscription, merci d'apporter au club une enveloppe portant votre nom, la mention " + code_famille + " et contenant :\n"
     message += "1- Le moyen de paiement de la cotisation par chèque(s), en liquide ou l'ordre de virement effectué, \n"
     message += "2- Un certificat médical à la pratique du taekwondo pour chaque membre de la famille, \n"
     message += "3- Une photo d'identité pour chaque membre de la famille avec le nom de l'adhérent au dos. \n\n"
@@ -45,16 +45,16 @@ def envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famil
 
     message += "Le Mudo Club Argenteuil"
 
-    # print('email:', email)
-    # print('message :' + message)
+    print('email:', email)
+    print('message :' + message)
 
-    send_mail(
-        'Confirmation inscription taekwondo MUDO Club Argenteuil', # objet du mail
-        message, # message
-        'mudoclub@tkdinscription.vfeapps.fr', # from email (envoyeur)
-        email, # to mail (destinataire),
-        fail_silently = False
-    )
+    # send_mail(
+    #     'Confirmation inscription taekwondo MUDO Club Argenteuil', # objet du mail
+    #     message, # message
+    #     'mudoclub@tkdinscription.vfeapps.fr', # from email (envoyeur)
+    #     email, # to mail (destinataire),
+    #     fail_silently = False
+    # )
     return 'ok'
 
 

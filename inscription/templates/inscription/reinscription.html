@@ -28,17 +28,18 @@
 
                 <div class="row align-items-center mt-2 mb-4">
                   <div class="col text-center">
-                    <b>Si vous ne souhaitez pas réinscrire une personne, cliquez sur la case bleu pour la désélectionner :</b>
+                    <b>Si vous ne souhaitez pas réinscrire une personne, cliquez sur la case bleu correspondante pour la désélectionner :</b>
                   </div>
                 </div>
 
+
               {% for membre in membres_famille %}
-                <div class="row align-items-center mx-auto mb-2">
-                    <div class="col text-center">
-                        <input class="form-check-input" type="checkbox" name="person_selected" value="{{ membre.1 }}" id="{{ membre.1 }}" checked>
-                        <label class="form-check-label">Oui, je réinscris</label>  <b>{{ membre.0 }}</b>
+                    <div class="row align-items-center mx-auto mb-2">
+                        <div class="col text-center">
+                            <input class="form-check-input" type="checkbox" name="person_selected" value="{{ membre.1 }}" id="{{ membre.1 }}" checked>
+                            <label class="form-check-label">Oui, je réinscris</label>  <b>{{ membre.0 }}</b>
+                        </div>
                     </div>
-                </div>
               {% endfor %}
                 <br>
                 <div class="row align-items-center mx-auto mt-3 mb-2">
@@ -60,5 +61,44 @@
             </form>
         </div>
 
+        <script>
+            let chckbx = document.querySelectorAll('.form-check-input');
+            let len = chckbx.length;
+            let buttons = document.querySelectorAll('button');
+
+            function checkCheckBoxes() {
+                let atLeastOneChecked = false;
+                l = chckbx.length;
+                for (i = 0; i < l; i++) {
+                     if (chckbx[i].checked) {
+                        atLeastOneChecked = true;
+                     }
+                }
+                return atLeastOneChecked;
+            }
+
+            for (i = 0; i < len; i++) {
+                chckbx[i].addEventListener('click', () => {
+
+                  atLeastOneChecked = checkCheckBoxes();
+
+                  if (!atLeastOneChecked) {
+                      buttons[1].disabled = true;    //  buttons[1] correspond au button SUIVANT
+
+                      if(confirm("Vous devez réinscrire au moins un ancien adhérent.\r\n\
+Si vous souhaitez inscrire une nouvelle personne sans réinscrire un ancien adhérent de la famille, \
+passez par le formulaire d'une première inscription au club.\r\n\r\n\
+Cliquez sur Annuler pour revenir au formulaire de réinscription.\r\n\
+Cliquez sur OK pour revenir à l'accueil.")) {
+                                location.href = "/q_inscription/";
+                        }
+                  }
+                  else {
+                       buttons[1].disabled = false;
+                  }
+
+                });
+            }
+        </script>
 
 {% endblock %}

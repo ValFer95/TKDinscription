@@ -218,17 +218,17 @@
 
         </div>
                 <script>
-                    var etat= {{ enabled }}
-                    x=document.getElementsByTagName('input');
+                    var etat = {{ enabled }}
+                    x = document.getElementsByTagName('input');
                     l = x.length;
                     for (i = 0; i < l; i++) {
-                       console.log(x[i].type);
+                       // console.log(x[i].type);
                        if (x[i].type != 'hidden') {
                         x[i].disabled = !etat;
                         }
                     }
 
-                    y=document.getElementsByTagName('select');
+                    y = document.getElementsByTagName('select');
                     l = y.length;
                     for (i = 0; i < l; i++) {
                       y[i].disabled = !etat;
