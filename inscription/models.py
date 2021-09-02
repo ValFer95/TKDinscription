@@ -116,7 +116,6 @@ class Paiement(models.Model):
     montant_cotis = models.IntegerField(default=0, verbose_name="Montant cotisation")
     saison = models.ForeignKey('cotisation.Saison', on_delete=models.CASCADE)
     paye = models.CharField(max_length=1, choices=PAYE_CHOICES, default=0, verbose_name="Cotisation réglée")
-    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="Commentaire")
 
     def __str__(self):
         return '{} saison {} - {}€ - {} '.format(self.famille, self.saison, self.montant_cotis, self.paye)
@@ -129,13 +128,27 @@ class HistoriquePaiement(models.Model):
         ('V', 'Virement'),
     )
 
+    ENCAISSE_CHOICES = (
+        ('0', 'Non'),
+        ('1', 'Oui'),
+    )
+
     famille = models.ForeignKey('Famille', on_delete=models.CASCADE)
     saison = models.ForeignKey('cotisation.Saison', on_delete=models.CASCADE)
     montant_regle = models.IntegerField(default=0, verbose_name="Montant réglé")
     type_rglmt = models.CharField(max_length=1, blank=True, null=True,
                                   choices=TYPE_RGLT_CHOICES, verbose_name="Type règlement")
-    date_rglt = models.DateTimeField(auto_now_add=True, blank=True, null=True, verbose_name="Date règlement")
+    date_recept_rglmt = models.DateField(blank=True, null=True, verbose_name="Date réception")
+    proprio_chq = models.CharField(max_length=50, blank=True, null=True, verbose_name="Propriétaire du chèque")
+    num_chq = models.CharField(max_length=7, blank=True, null=True, verbose_name="Numéro du chèque")
+    bank_chq = models.CharField(max_length=20, blank=True, null=True, verbose_name="Banque")
+    date_encaissement = models.DateField(blank=True, null=True, verbose_name="Date encaissement")
+    date_depot_bank = models.DateField(blank=True, null=True, verbose_name="Date dépôt à banque")
+    encaisse = models.CharField(max_length=1, blank=True, null=True,
+                                  choices=ENCAISSE_CHOICES, verbose_name="Chèque encaissé")
+    comment = models.CharField(max_length=255, blank=True, null=True, verbose_name="Commentaire")
+    date_saisie = models.DateTimeField(auto_now_add=True, blank=True, null=True, verbose_name="Date saisie")
 
     def __str__(self):
-        return '{} sasion {} - {}€ par {} le {} '.format(self.famille, self.saison, self.montant_regle,
-                                                         self.type_rglmt, self.date_rglt)
+        return '{} saison {} - {}€ par {} le {} '.format(self.famille, self.saison, self.montant_regle,
+                                                         self.type_rglmt, self.date_saisie)

@@ -22,19 +22,31 @@
       <table style="height: 300px;width: 100%;">
         <tbody>
           <tr>
-            <td class="align-middle text-center h4">Pour simuler la cotisation annuelle de toute la famille pour la saison {{ saison_actuelle }},
-            cliquer sur le lien ci-dessous</td>
-          </tr>
-          <tr>
-            <td class="align-middle text-center">
-                <img alt="flèche bas" src="{% static 'img/fleche-bas.png' %}" height="80" width="80"/>
+            <td class="align-middle text-center h4">
+                Pour connaître le lieu, les jours et horaires des cours de la saison {{ saison_actuelle }} :
+                <a href="https://www.mudoclubargenteuil.fr/2016/10/horaires-lieu.html" class="text-danger fw-bold h4">cliquez ici</a>
             </td>
           </tr>
           <tr>
-            <td class="align-middle text-center">
-              <a href="{% url 'calcul_simul' %}" class="text-danger fw-bold h2">Simuler la cotisation annuelle</a>
+            <td class="align-middle text-center h4">Pour simuler la cotisation annuelle de toute la famille :
+            <a href="{% url 'calcul_simul' %}" class="text-danger fw-bold h4">simuler la cotisation annuelle</a>
             </td>
           </tr>
+          <tr>
+            <td class="align-middle text-center h4">Pour vous inscrire :
+            <a href="{% url 'q_inscription' %}" class="text-danger fw-bold h4">cliquez ici</a>
+            </td>
+          </tr>
+<!--          <tr>-->
+<!--            <td class="align-middle text-center">-->
+<!--                <img alt="flèche bas" src="{% static 'img/fleche-bas.png' %}" height="80" width="80"/>-->
+<!--            </td>-->
+<!--          </tr>-->
+<!--          <tr>-->
+<!--            <td class="align-middle text-center">-->
+<!--              <a href="{% url 'calcul_simul' %}" class="text-danger fw-bold h2">Simuler la cotisation annuelle</a>-->
+<!--            </td>-->
+<!--          </tr>-->
         </tbody>
       </table>
 

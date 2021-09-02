@@ -53,10 +53,19 @@ class FamilleAdmin(admin.ModelAdmin):
 class PaiementAdmin(admin.ModelAdmin):
     list_display = ('famille', 'saison', 'montant_cotis', 'paye',)
     ordering = ('famille__nom_famille', 'saison' )
-    list_filter = ('saison', 'famille__nom_famille', )
+    list_filter = (
+        'saison',
+        ('famille', admin.RelatedOnlyFieldListFilter),
+    )
 
 
 @admin.register(HistoriquePaiement)
 class HistoriquePaiementAdmin(admin.ModelAdmin):
-    list_display = ('famille', 'saison', 'montant_regle', 'type_rglmt', 'date_rglt')
+    list_display = ('famille', 'saison', 'montant_regle', 'type_rglmt', 'date_encaissement',
+                    'date_depot_bank', 'encaisse', 'comment', 'date_saisie')
     ordering = ('famille', 'saison', )
+    list_filter = (
+        ('saison', admin.RelatedOnlyFieldListFilter),
+        'date_encaissement', 'encaisse',
+        ('famille', admin.RelatedOnlyFieldListFilter),
+    )
