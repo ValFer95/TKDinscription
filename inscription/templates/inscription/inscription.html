@@ -117,8 +117,8 @@
                         <strong>{{ formAdh.numtel_adh.errors }}</strong>
                     </div>
                 {% endif %}
-                <div class="col-md-6 text-start">
-                    <div id="mailHelp" class="form-text">Email (facultatif)</div>
+                <div class="col-md-7 text-start">
+                    <div id="mailHelp" class="form-text">Email (facultatif - pour envoi des infos inscription si adhérent majeur)</div>
                     {{ formAdh.email_adh|attr:"placeholder:nom@mail.xxx"|add_class:"form-control ms-1 mb-2" }}
                 </div>
                 {% if formAdh.email_adh.errors %}
@@ -166,8 +166,8 @@
                         <strong>{{ formContact.numtel_contact1.errors }}</strong>
                     </div>
                 {% endif %}
-                <div class="col-md-6 text-start">
-                    <div id="mailCntctHelp" class="form-text">Email contact principal</div>
+                <div class="col-md-8 text-start">
+                    <div id="mailCntctHelp" class="form-text">Email contact principal (pour envoi des infos inscription si adhérent mineur)</div>
                     {{ formContact.email_contact|attr:"placeholder:nom@mail.xxx"|add_class:"form-control ms-1 mb-2" }}
                 </div>
                 {% if formContact.email_contact.errors %}

@@ -35,7 +35,7 @@ def envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famil
 
     message += "\n La cotisation annuelle à régler est de " + str(cotis_adh) + "€.\n \n"
 
-    message += "Vous pouvez payer par chèque, virement, liquide en 3 fois.\n"
+    message += "Vous pouvez régler en espèces, par virement ou par chèque (jusqu'à 3 fois).\n"
     message += "Pour terminer l'inscription, merci d'apporter au club une enveloppe portant votre nom, la mention " + code_famille + " et contenant :\n"
     message += "1- Le moyen de paiement de la cotisation par chèque(s), en liquide ou l'ordre de virement effectué, \n"
     message += "2- Un certificat médical à la pratique du taekwondo pour chaque membre de la famille, \n"

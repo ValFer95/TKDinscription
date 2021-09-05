@@ -18,8 +18,7 @@ class Adherent(models.Model):
     prenom_adh = models.CharField(max_length=50, verbose_name="Prénom adhérent")
     ddn = models.DateField(verbose_name="Date de naissance")
     sexe = models.CharField(max_length=1, choices=SEXE_CHOICES)
-    taille = models.IntegerField(validators=[MinValueValidator(100), MaxValueValidator(210)], blank=True, null=True,
-                                 verbose_name="Taille en cm")
+    taille = models.IntegerField(validators=[MinValueValidator(100), MaxValueValidator(210)], verbose_name="Taille en cm")
     etudiant = models.CharField(max_length=1, choices=ETUDIANT_CHOICES)
     adresse = models.CharField(max_length=100)
     cp = models.CharField(max_length=5, verbose_name="Code postal")
