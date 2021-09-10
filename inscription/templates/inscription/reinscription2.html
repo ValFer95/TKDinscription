@@ -256,5 +256,55 @@
 
     </form>
 
+<script>
+
+     let chcktel = document.querySelectorAll("[id^=id_numtel_]");
+     let regex = /[0-9]{10}/;
+     let lenChcktel = chcktel.length;
+     let buttons = document.querySelectorAll('button');
+     let lenButtons = buttons.length;
+     let lastTelIssue = -1;
+
+     function verifNumtel() {
+         let numTelValid = false;
+         for (i = 0; i < lenChcktel; i++) {
+            if(chcktel[i].value.trim() != '') {
+                if(chcktel[i].value.trim().match(regex)) {
+                    numTelValid = true;
+                }
+                else {
+                    numTelValid = false;
+                    lastTelIssue=i;
+                    break;
+                }
+            }
+            else {
+                numTelValid = true;
+            }
+         }
+     return numTelValid;
+     }
+
+     for (i = 0; i < lenButtons; i++) {
+        let numTelValid;
+        if (buttons[i].name == 'inscrire') {
+            buttons[i].addEventListener('click', () => {
+
+                numTelValid = verifNumtel();
+
+                if (! numTelValid) {
+                        alert("Un des numéros de téléphone est incorrect. Merci de vérifier.");
+                        chcktel[lastTelIssue].focus();
+                        event.preventDefault();
+                        return false;
+                }
+
+            });
+        }
+
+     }
+
+
+</script>
 
 {% endblock %}

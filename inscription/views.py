@@ -104,7 +104,8 @@ def reinscription(request):
         if not (formAdh.is_valid() and formContact.is_valid()):
             print("pb de formulaire")
 
-        # si le formulaire a été rendu enabled
+        # si le formulaire a été rendu enabled pour modification
+        # if request.POST.get("nom_contact") :    # le champ nom_contact existe puisque le formulaire a été rendu accessible
         if formAdh.is_valid() and formContact.is_valid() :
             # édition des mises à jour dans Adherent et Contact
             # test pour savoir si un nouveau contact a été saisi
@@ -150,7 +151,10 @@ def reinscription(request):
             else:
                 grade = False
 
-        # si le formulaire n'a pas été rendu enabled
+        # else :
+        #     print("pb de formulaire")
+
+        # si le formulaire n'a pas été rendu enabled pour modification
         else:
             # calcul de l'âge (en créant une fonction) et récupération de l'info étudiant
             query_set_adh = Adherent.objects.values('ddn', 'etudiant').filter(pk=request.POST['id_treated_person'])
