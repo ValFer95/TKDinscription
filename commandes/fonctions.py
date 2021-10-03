@@ -147,8 +147,8 @@ def envoi_mail(list_info, code_famille, email):
 
     addr_mail = email.split(',')
 
-    print('email:', email)
-    print('message :' + message)
+    # print('addr_mail:', addr_mail)
+    # print('message :' + message)
 
     send_mail(
         'Confirmation inscription taekwondo MUDO Club Argenteuil', # objet du mail
