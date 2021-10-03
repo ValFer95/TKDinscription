@@ -152,7 +152,7 @@ def envoi_mail(list_info, code_famille, email):
         'Confirmation inscription taekwondo MUDO Club Argenteuil', # objet du mail
         message, # message
         'mudoclub@tkdinscription.vfeapps.fr', # from email (envoyeur)
-        list(email), # to mail (destinataire),
+        email.split(','), # to mail (destinataire),
         fail_silently = False
     )
     return 'ok'
