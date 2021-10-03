@@ -13,6 +13,11 @@ body {
     height : 30px;
 }
 
+.moyen_input_text {
+    width : 5em;
+    height : 35px;
+}
+
 .short_input_text {
     width : 7.5em;
     height : 35px;

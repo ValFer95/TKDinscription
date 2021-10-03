@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %}  Commandes {% endblock %}
+
+{% block content %}
+
+    <!-- TITRE DE LA PAGE -->
+    <div class="h2 text-center">
+        Commandes dobok pour la famille  <b>{{ code_famille }}</b> - saison {{ saison_actuelle }}
+    </div>
+
+        <div class="border p-3 mx-auto mb-5">
+
+            {% if statut_paiement != '2' %}
+            <div class="alert alert-danger text-center">
+              <strong> Information :
+                  {% if statut_paiement == '0' %}
+                        vous n'avez pas réglé la cotisation 2021-2022.
+                  {% elif statut_paiement ==  '1' %}
+                        vous n'avez pas entièrement réglé la cotisation 2021-2022.
+                  {% endif %}
+                  Vous pouvez passer commande dès à présent mais vous ne serez pas prioritaire lors de la distribution.
+              </strong>
+            </div>
+            {% endif %}
+
+            <form class="text-center" action="{% url 'f_commandes' %}" method="post">
+              {% csrf_token %}
+
+
+                <div class="row align-items-center mt-2 mb-4">
+                  <div class="col text-center" id="info_taille">
+                    <b>Corrigez la taille si besoin et indiquez "oui" pour commander un dobok :</b>
+                  </div>
+                </div>
+
+
+               <table class="table w-50 mx-auto">
+                  <thead>
+                    <tr>
+                      <th scope="col">Nom Prénom</th>
+                      <th scope="col">Taille (en cm)</th>
+                      <th scope="col">Commander un debok</th>
+                      <th scope="col"></th>         <!-- colonne info commande si commande passée-->
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for membre in membres_famille %}
+                    <tr>
+                        <td>{{ membre.0 }}</td>
+                        <td>
+                            {% if membre|length == 3 %}  <!-- si pas encore de commande passée -->
+                                <input type="number" name="tailleAdh{{ membre.2 }}" min="90" max="190" class="form-control mx-auto mb-2 moyen_input_text" maxlength="3" value="{{ membre.1 }}" id="{{ membre.2 }}">
+                            {% else %}
+                                {{ membre.1 }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if membre|length == 3 %}  <!-- si pas encore de commande passée -->
+                              <input class="form-check-input" type="radio" name="flexRadio{{ membre.2 }}" id="flexRadioOui{{ membre.2 }}" value="1" >
+                              <label class="form-check-label me-3" for="flexRadioOui{{ membre.2 }}">Oui</label>
+
+                              <input class="form-check-input" type="radio" name="flexRadio{{ membre.2 }}" id="flexRadioNon{{ membre.2 }}" value="0" checked>
+                              <label class="form-check-label" for="flexRadioNon{{ membre.2 }}">Non</label>
+                            {% endif %}
+                        </td>
+                        {% if membre|length > 3 %}
+                            {% if not membre.5 %}    <!-- info commande non distribuée membre.5 = date de distribution -->
+                            <td>
+                                <div class="text-start small">commande <b>{{ membre.3 }}</b> depuis le {{ membre.4 }}</div>
+                            </td>
+                            {% else %}
+                            <td>
+                                <div class="text-start small">commande <b>{{ membre.3 }}</b> le {{ membre.5 }}, {{ membre.6 }}
+                                    {% if membre.7 != '0' %} : {{ membre.7 }}€ {% endif %}</div>
+                            </td>
+                            {% endif %}
+                        {% endif %}
+                  {% endfor %}
+                  </tbody>
+                </table>
+
+                <br>
+                <div class="row align-items-center small">
+                    <div class="col text-center">A titre indicatif, les tarifs des doboks vont de 40 à 50€ selon la taille :</div>
+                </div>
+                <div class="row align-items-center small">
+                    <div class="text-center">- 35€ pour 0m90 à 1m        </div>
+                    <div class="text-center">- 40€ pour 1m10, 1m20, 1m30 </div>
+                    <div class="text-center">- 45€ pour 1m40, 1m50, 1m60 </div>
+                    <div class="text-center">- 50€ pour 1m70, 1m80, 1m90 </div>
+                </div>
+                <div class="row align-items-center mb-2 small">
+                    <div class="col text-center">
+                        Il pourra vous être recommandé une taille au-dessus ou en-dessous.
+                    </div>
+                </div>
+
+                <div class="row align-items-center mt-3">
+                  <div class="col text-center">
+                    <button type="submit" class="btn btn-success me-3" name="comm" value="Commander">Commander</button>
+                  </div>
+                </div>
+            </form>
+        </div>
+
+        <script>
+            let chckbx = document.querySelectorAll('.form-check-input');        // radio-bouton
+            let len = chckbx.length;
+            let buttons = document.querySelectorAll('button');
+
+            let inputTextTaille = document.querySelectorAll('.moyen_input_text');
+            let lenTaille = inputTextTaille.length;
+
+            // retire le bouton COMMANDER s'il n'y a plus de radio bouton sur la page
+            if (len == 0) {
+                buttons[1].remove();
+                document.querySelector("#info_taille").textContent = "Récapitulatif de votre commande :";
+                document.querySelector("#info_taille").style.fontWeight = "bold";
+            }
+
+            function checkCheckBoxes() {
+                let atLeastOneOui = false;
+                for (i = 0; i < len; i++) {
+                    if (chckbx[i].id.startsWith('flexRadioOui') && chckbx[i].checked) {
+                        atLeastOneOui = true;
+                    }
+                }
+                return atLeastOneOui;
+            }
+
+            // permet de redonner la main sur le bouton COMMANDE s'il a été désactivé (le user a tenté de faire une commande vide)
+            for (i = 0; i < len; i++) {
+                chckbx[i].addEventListener('click', () => {
+                    buttons[1].disabled = false;
+                });
+            }
+
+            buttons[1].addEventListener('click', () => {     //  buttons[1] correspond au button COMMANDE
+              // controle des valeurs de taille
+              message_taille_sous = 'Merci de corriger la taille saisie. La plus petite taille est 90 cm.'
+              message_taille_sur = 'Merci de corriger la taille saisie. La plus grande taille est 190 cm.'
+              tailleOK = true;
+
+              for (i = 0; i < lenTaille; i++) {
+                    if (inputTextTaille[i].value < 90) {
+                        alert(message_taille_sous);
+                        tailleOK = false;
+                    }
+                    if (inputTextTaille[i].value > 190) {
+                        alert(message_taille_sur);
+                        tailleOK = false;
+                    }
+              }
+
+              if (tailleOK) {
+                  atLeastOneOui = checkCheckBoxes();    // vérifier qu'au moins 1 oui a été sélectionné
+
+                  if (!atLeastOneOui) {
+                        buttons[1].disabled = true;
+                       if(confirm("Vous n'avez pas sélectionné de dobok(s) à commander !\r\n\
+Cliquez sur Annuler puis, cliquez sur Oui pour commander.\r\n\r\n\
+Sinon, cliquez sur OK pour revenir à l'accueil.")) {
+                                                    location.href = "/accueil/";
+                                                }
+                  }
+                }
+            });
+
+        </script>
+
+
+{% endblock %}

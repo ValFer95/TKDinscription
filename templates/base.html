@@ -49,6 +49,11 @@
                        {% if url_name == 'accueil' %} aria-current="page"{% endif %}
                        href="{% url 'q_inscription' %}">Inscription</a>
                   </li>
+                  <li class="nav-item">
+                    <a class="nav-link {% if url_name == 'commandes' %}active{% endif %}"
+                       {% if url_name == 'accueil' %} aria-current="page"{% endif %}
+                       href="{% url 'commandes' %}">Commandes</a>
+                  </li>
 <!--                  <li class="nav-item">-->
 <!--                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Réinscription</a>-->
 <!--                  </li>-->

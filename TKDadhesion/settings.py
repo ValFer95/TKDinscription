@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'cotisation.apps.CotisationConfig',
     'widget_tweaks',
     'inscription.apps.InscriptionConfig',
+    'commandes.apps.CommandesConfig',
 ]
 
 MIDDLEWARE = [

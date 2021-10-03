@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+{% load static %}
+
+{% block title %}  Commandes {% endblock %}
+
+{% block content %}
+
+    <!-- TITRE DE LA PAGE -->
+    <div class="h2 text-center">
+        Fin de commande dobok
+    </div>
+
+        <div class="text-center mb-2">
+            La commande de dobok(s) pour la famille <b>{{ code_famille }}</b> est prise en compte :
+        </div>
+
+        <table class="table w-50 mx-auto">
+          {% if command_dobok|length > 1 %}
+          <thead>
+            <tr>
+              <th scope="col"></th>
+                {% for i in command_dobok %}
+                    <th scope="col">Membre {{ forloop.counter }}</th>
+                {% endfor %}
+            </tr>
+          </thead>
+          {% endif %}
+          <tbody>
+            <tr>
+              <th scope="row">Nom Prénom</th>
+                {% for i in command_dobok %}
+                    <td>{{ i.0 }}</td>
+                {% endfor %}
+            </tr>
+            <tr>
+              <th scope="row">Taille</th>
+                {% for i in command_dobok %}
+                    <td>{{ i.1 }} cm</td>
+                {% endfor %}
+            </tr>
+            <tr>
+              <th scope="row">Tarif informatif</th>
+                {% for i in command_dobok %}
+                    <td>{{ i.2 }} €</td>
+                {% endfor %}
+            </tr>
+          </tbody>
+        </table>
+
+
+        <div class=" text-center mb-3">
+            Le tarif est donné <b>à titre informatif</b>. Il pourra vous être recommandé une taille au-dessus ou en-dessous.
+            <br>Vous pouvez régler en espèces ou par chèque, au moment de la distribution.
+        </div>
+        <div class=" text-center mb-2">
+            Vous recevrez ces informations par mail.
+        </div>
+
+        <div class=" text-center mb-2 mt-2">
+            <a class="btn btn-danger" href="{% url 'accueil' %}" name="corrige">Retour à l'accueil</a>
+        </div>
+
+    </div>
+
+
+{% endblock %}
