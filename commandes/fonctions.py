@@ -145,14 +145,16 @@ def envoi_mail(list_info, code_famille, email):
 
     message += "Le Mudo Club Argenteuil"
 
-    # print('email:', email)
-    # print('message :' + message)
+    addr_mail = email.split(',')
+
+    print('email:', email)
+    print('message :' + message)
 
     send_mail(
         'Confirmation inscription taekwondo MUDO Club Argenteuil', # objet du mail
         message, # message
         'mudoclub@tkdinscription.vfeapps.fr', # from email (envoyeur)
-        email.split(','), # to mail (destinataire),
+        addr_mail, # to mail (destinataire),
         fail_silently = False
     )
     return 'ok'
