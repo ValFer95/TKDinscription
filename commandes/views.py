@@ -15,6 +15,13 @@ def commandes(request):
     code_famille = ''
     statut_paiement = ''
     page_html_suivante = "commandes/authentif.html"
+    ### variables pour personnalisation de la page d'authentification et utilisation pour un autre besoin (accès privé staff)
+    titre_pageHTML = 'Commandes'    # titre de la page HTML
+    placeholderEmail = 'Votre adresse email'
+    placeholderPwd = 'Votre code famille (*)'
+    nextDjangoURL = 'commandes'     # URL dajngo de la balise <form> de la page d'authentification
+    ### Fin variables pesonnalisation
+
 
     if request.method == 'GET': # GET
         authentForm = AuthentifForm()
@@ -23,7 +30,7 @@ def commandes(request):
         authentForm = AuthentifForm(request.POST)
 
         email_auth = request.POST['email_auth'].strip()
-        code_famille = request.POST['code_famille'].strip()
+        code_famille = request.POST['pwd'].strip()
 
         code, message_err = authent(code_famille, email_auth, saison_actuelle)
 
@@ -45,6 +52,10 @@ def commandes(request):
         'code_famille': code_famille,
         'membres_famille': membres_famille,
         'statut_paiement' : statut_paiement,
+        'titre_pageHTML' : titre_pageHTML,
+        'nextDjangoURL' : nextDjangoURL,
+        'placeholderEmail' : placeholderEmail,
+        'placeholderPwd' : placeholderPwd
     }
 
     return render(request, page_html_suivante, context )

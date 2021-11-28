@@ -22,9 +22,14 @@ def calcul_cotis_adh(code_tarif, saison, reinscription):
 
     return cotis_annuelle
 
-def calcul_age_adh(ddn):
+
+def calcul_age_adh(ddn, besoin):
+    if besoin == 'reel' :   # pour calculer l'âge du jour
+        ajout = 0
+    else:  # pour calcul age et détermination de la catégorie combat
+        ajout = 1
     ddn_split = ddn.split('/')
-    age_adherent = int((date.today().year + 1)) - int(ddn_split[2])
+    age_adherent = int((date.today().year + ajout)) - int(ddn_split[2])
     return age_adherent
 
 

@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'inscription.apps.InscriptionConfig',
     'commandes.apps.CommandesConfig',
+    'staff.apps.StaffConfig',
 ]
 
 MIDDLEWARE = [
@@ -145,5 +146,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # variable environnement email_password
 EMAIL_PASSWORD = os.environ['EMAIL_PASSWORD']
+
+# variable contenant l'adresse vers laquelle redirigé les personnes qui n'ont pas été autorisés à accéder au rép /Staff/
+LOGIN_URL = '/'
 
 from TKDadhesion.local_settings import *

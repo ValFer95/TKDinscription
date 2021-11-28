@@ -2,26 +2,28 @@
 {% load widget_tweaks %}
 {% load static %}
 
-{% block title %}  Commandes {% endblock %}
+{% block title %}  {{ titre_pageHTML }} {% endblock %}
 
 {% block content %}
 
     <!-- TITRE DE LA PAGE -->
     <div class="h2 text-center">
-        Commandes - saison {{ saison_actuelle }}
+        {{ titre_pageHTML }} - saison {{ saison_actuelle }}
     </div>
 
     {% if message != '' %}
         <div class="alert alert-danger text-center">
-            <strong>{{message}}</strong>
+            <strong>{{ message }}</strong>
         </div>
     {% endif %}
 
-  <form style="width: 100%; max-width: 330px; padding: 15px; margin: auto;" action="{% url 'commandes' %}" method="post">
+
+<form style="width: 100%; max-width: 330px; padding: 15px; margin: auto;" action="{% url nextDjangoURL %}" method="post">
       {% csrf_token %}
 
-      {% render_field authentForm.email_auth class="form-control ms-1 mb-2" placeholder="Votre adresse email" type="email" %}
-      {% render_field authentForm.code_famille class="form-control ms-1 mb-2" placeholder="Votre code famille (*)" type="text" %}
+      {% render_field authentForm.email_auth class="form-control ms-1 mb-2" placeholder=placeholderEmail type="email" %}
+      {% render_field authentForm.pwd class="form-control ms-1 mb-2" placeholder=placeholderPwd type="text" %}
+
 
     <div class="text-center">
         <button style="width: 30%; margin: auto;" class="btn btn-success me-3" type="submit">Entrer</button>
@@ -30,6 +32,14 @@
   </form>
 
 
-  <h1 class="h6 mb-3 mt-3 fw-normal text-center"> (*) Le code famille est celui que vous avez reçu par mail lors de l'inscription. </h1>
+  <h1 class="h6 mb-3 mt-3 fw-normal text-center" id="info_code_famille"> (*) Le code famille est celui que vous avez reçu par mail lors de l'inscription. </h1>
+
+    <script>
+        let info = document.querySelector('#info_code_famille');
+        let titre = document.querySelector('.h2');
+        if (titre.textContent.indexOf('staff') != -1) {
+            info.textContent = '';
+        }
+    </script>
 
 {% endblock %}

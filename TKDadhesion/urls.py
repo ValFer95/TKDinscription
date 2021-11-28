@@ -18,6 +18,7 @@ from django.urls import path
 from cotisation import views as cotis_views
 from inscription import views as inscript_views
 from commandes import views as commandes_views
+from staff import views as staff_views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -28,6 +29,8 @@ urlpatterns = [
     path('inscription_autre_mb_famille/', inscript_views.fin_reinscription, name="fin_reinscription"),
     path('commandes/', commandes_views.commandes, name="commandes"),
     path('f_commandes/', commandes_views.fin_commandes, name="f_commandes"),
+    path('staff/', staff_views.sommaire, name="sommaire_staff"),
+    path('relances/', staff_views.relances, name="relances"),
     path('accueil/', cotis_views.accueil, name='accueil'),
     path('', cotis_views.accueil),
 ]

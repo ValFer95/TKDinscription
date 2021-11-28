@@ -45,7 +45,7 @@
                        href="{% url 'calcul_simul' %}">Calculette cotisation</a>
                   </li>
                   <li class="nav-item">
-                    <a class="nav-link {% if url_name == 'inscription' %}active{% endif %}"
+                    <a class="nav-link {% if url_name == 'q_inscription' %}active{% endif %}"
                        {% if url_name == 'accueil' %} aria-current="page"{% endif %}
                        href="{% url 'q_inscription' %}">Inscription</a>
                   </li>
@@ -54,9 +54,11 @@
                        {% if url_name == 'accueil' %} aria-current="page"{% endif %}
                        href="{% url 'commandes' %}">Commandes</a>
                   </li>
-<!--                  <li class="nav-item">-->
-<!--                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Réinscription</a>-->
-<!--                  </li>-->
+                  <li class="nav-item">
+                    <a class="nav-link {% if url_name == 'sommaire_staff' %}active{% endif %}"
+                       {% if url_name == 'accueil' %} aria-current="page"{% endif %}
+                       href="{% url 'sommaire_staff' %}">Réservé staff</a>
+                  </li>
                     {% endwith %}
                 </ul>
               </div>

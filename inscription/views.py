@@ -132,7 +132,7 @@ def reinscription(request):
                 formAdh.save()
 
             # calcul age adhérent au 31 décembre de la saison suivante
-            age_adherent = calcul_age_adh(request.POST['ddn'])
+            age_adherent = calcul_age_adh(request.POST['ddn'], 'categ_combat')
 
             if age_adherent < 18:   # la case "étudiant" ne peut être OUI
                 if request.POST['etudiant'] == '1':
@@ -162,7 +162,7 @@ def reinscription(request):
                 ddn = mb.get('ddn')
                 etudiant_verif = mb.get('etudiant')
             ddn = ddn.strftime("%d/%m/%Y") # pour mettre au format %d/%m/%Y car dans la base le format est %Y-%m-%d
-            age_adherent = calcul_age_adh(ddn)
+            age_adherent = calcul_age_adh(ddn,'reel')
 
             query_set_adh_saison = Adherent_Saison.objects.values('discipline', 'grade').\
                 filter(adherent__pk=request.POST['id_treated_person'])
@@ -328,6 +328,7 @@ def reinscription(request):
     return render(request, page_html_suivante, context )
 
 # inscription d'un autre membre de la famille et fin de réinscription
+@transaction.atomic
 def fin_reinscription(request):
 
     saison_actuelle = Saison.objects.get(saison_actuelle=True)
