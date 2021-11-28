@@ -146,7 +146,7 @@ def message_Cotis(statut, infos_famille):
     else:
         message += "A ce jour, il reste " + str(infos_famille[2]) + "€ à régler.\n\n"
 
-    message += "Merci d'apporter votre règlement d'un montant de " + str(infos_famille[2]) + "€ dans une une enveloppe portant vos nom et prénom dans les plus brefs délais. \n"
+    message += "Merci d'apporter votre règlement d'un montant de " + str(infos_famille[2]) + "€ dans une enveloppe portant vos nom et prénom dans les plus brefs délais. \n"
     message += "Vous pouvez régler en espèces, par virement ou par chèque (jusqu'à 3 fois).\n"
     message += "Les chèques seront déposés le 5 de chaque mois. \n\n"
 
