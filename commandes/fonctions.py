@@ -36,7 +36,7 @@ def authent(code_famille, email_auth, saison_actuelle):
             retour = 'authent OK'
         else:
             code = 2
-            retour = "L'adresse mail n'est pas connue ou vous n'êtes pas encore inscrit à la saison " + str(saison_actuelle)
+            retour = "Codes non reconnus ou vous n'êtes pas encore inscrit à la saison " + str(saison_actuelle)
 
     else:
         code = 1

@@ -1,8 +1,9 @@
 from django.shortcuts import render
 from inscription.forms import AdherentForm, GradeForm, ContactForm, DisciplineForm, DisciplineFormSelected, GradeFormSelected
 from inscription.models import Contact, Adherent, Famille, Adherent_Saison, CategorieCombat, Grade, Paiement
-from cotisation.models import Saison, Categorie, Discipline
-from inscription.fonctions import crea_code_famille, calcul_cotis_adh, calcul_age_adh, envoi_mail, liste_dest_mail
+from cotisation.models import Saison, Maintenance, Categorie, Discipline
+from inscription.fonctions import crea_code_famille, calcul_cotis_adh, calcul_age_adh, envoi_mail, liste_dest_mail, \
+    code_maintenance
 from cotisation.fonctions import reduc_famille, appliq_reduc
 from django.db import transaction
 from datetime import date
@@ -12,11 +13,17 @@ from django.db.models import Max
 # formulaire d'aiguillage entre inscrition et réinscription
 def intro_inscription(request):
     saison_actuelle = Saison.objects.get(saison_actuelle=True)
+    maintenance = Maintenance.objects.get(maintenance='Maintenance')
     famille_match = True
     famille_inscrite = False
     code_famille = ""
     membres_famille = []
-    page_html_suivante = "inscription/intro_inscription.html"
+    # blocage de l'accès des pages pour empêcher les gens qui auraient gardé les url directes en historique ou en favori \
+    # d'accéder aux formulaires pendant la maintenace
+    if code_maintenance(maintenance) == 1:
+        page_html_suivante = 'accueil-maintenance.html'
+    else :
+        page_html_suivante = 'inscription/intro_inscription.html'
 
     # test de l'existence du code famille en base de données
     if request.method == 'POST':
@@ -50,6 +57,7 @@ def intro_inscription(request):
 
     context = {
         'saison_actuelle' : saison_actuelle,
+        'maintenance': code_maintenance(maintenance),
         'famille_match' : famille_match,
         'famille_inscrite' : famille_inscrite,
         'code_famille' : code_famille,
@@ -62,6 +70,7 @@ def intro_inscription(request):
 def reinscription(request):
 
     saison_actuelle = Saison.objects.get(saison_actuelle=True)
+    maintenance = Maintenance.objects.get(maintenance='Maintenance')
 
     cotis_adh = 0
     list_nom = ''
@@ -307,6 +316,7 @@ def reinscription(request):
 
     context = {
         'saison_actuelle' : saison_actuelle,
+        'maintenance': code_maintenance(maintenance),
         'person_selected' : person_selected,
         'id_treated_person' : id_treated_person,
         'nom_adherent' : nom_adherent,
@@ -332,6 +342,8 @@ def reinscription(request):
 def fin_reinscription(request):
 
     saison_actuelle = Saison.objects.get(saison_actuelle=True)
+    maintenance = Maintenance.objects.get(maintenance='Maintenance')
+
     cotis_adh = request.session["cotis_adh_sum"]
     nb_personnes = request.session['nb_personnes']
 
@@ -385,6 +397,7 @@ def fin_reinscription(request):
 
     context = {
         'saison_actuelle': saison_actuelle,
+        'maintenance': code_maintenance(maintenance),
         'code_famille': le_code_famille_svg,
         'cotis_adh': cotis_adh,
         'nb_personnes': nb_personnes,
@@ -405,8 +418,15 @@ def fin_reinscription(request):
 @transaction.atomic
 def inscription(request):
     saison_actuelle = Saison.objects.get(saison_actuelle=True)
+    maintenance = Maintenance.objects.get(maintenance='Maintenance')
+    # blocage de l'accès des pages pour empêcher les gens qui auraient gardé les url directes en historique ou en favori \
+    # d'accéder aux formulaires pendant la maintenace
+    if code_maintenance(maintenance) == 1:
+        print('retour à accueil')
+        page_html_suivante = 'accueil-maintenance.html'
+    else :
+        page_html_suivante = 'inscription/inscription.html'
 
-    page_html_suivante = "inscription/inscription.html"
     cotis_adh = 0
     code_famille = ''
     nb_personnes = 0
@@ -421,7 +441,13 @@ def inscription(request):
         formGrade = GradeForm()
         formContact = ContactForm()
         formDiscipline = DisciplineForm()
-        page_html_suivante = "inscription/inscription.html"
+        # blocage de l'accès des pages pour empêcher les gens qui auraient gardé les url directes en historique ou en favori \
+        # d'accéder aux formulaires pendant la maintenace
+        if code_maintenance(maintenance) == 1:
+            print('retour à accueil')
+            page_html_suivante = 'accueil-maintenance.html'
+        else:
+            page_html_suivante = 'inscription/inscription.html'
 
     else :
         #print('méthode post')
@@ -580,7 +606,14 @@ def inscription(request):
                 envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famille, list_email)
 
             else:
-                page_html_suivante = "inscription/inscription.html"
+                # blocage de l'accès des pages pour empêcher les gens qui auraient gardé les url directes en historique ou en favori \
+                # d'accéder aux formulaires pendant la maintenace
+                if code_maintenance(maintenance) == 1:
+                    print('retour à accueil')
+                    page_html_suivante = 'accueil-maintenance.html'
+                else:
+                    page_html_suivante = 'inscription/inscription.html'
+
                 formAdh = AdherentForm(initial={"adresse":request.POST['adresse'].strip(),"cp":request.POST['cp'].strip(),
                                                 "ville":request.POST['ville'].strip()})
                 formGrade = GradeForm()
@@ -593,6 +626,7 @@ def inscription(request):
 
     context = {
         'saison_actuelle': saison_actuelle,
+        'maintenance' : code_maintenance(maintenance),
         'formAdh': formAdh,
         'formGrade': formGrade,
         'formContact' : formContact,

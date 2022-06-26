@@ -1,5 +1,5 @@
 from django.contrib import admin
-from cotisation.models import Saison, Categorie, Discipline, Tarif, MotifReduction, TauxReduction
+from cotisation.models import Saison, Maintenance, Categorie, Discipline, Tarif, MotifReduction, TauxReduction
 
 admin.site.site_header = "Taekwondo Adhésion"
 admin.site.site_url = '/accueil/'
@@ -9,6 +9,12 @@ class SaisonAdmin(admin.ModelAdmin):
     list_display = ('saison', 'saison_actuelle',)
     list_editable = ('saison_actuelle',)
     ordering = ('-saison',)
+
+
+@admin.register(Maintenance)
+class MaintenanceAdmin(admin.ModelAdmin):
+    list_display = ('maintenance', 'maintenance_en_cours')
+    list_editable = ('maintenance_en_cours',)
 
 
 @admin.register(Categorie)

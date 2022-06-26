@@ -13,13 +13,19 @@
 
     <div class="container">
 
+        {% if message_post_relance != '' %}
+            <div class="alert alert-danger text-center">
+                <strong>{{ message_post_relance }}</strong>
+            </div>
+        {% endif %}
+
         <form style="width: 100%; max-width: 800px; padding: 15px; margin: auto;" action="{% url 'relances' %}" method="post">
         {% csrf_token %}
 
         <table class="table w-75 mx-auto">
           <thead>
             <tr>
-              <th scope="col">Actions</th>
+                <th scope="col">Actions</th>
                 <th scope="col">Infos</th>
                 <th scope="col"></th>
             </tr>
@@ -27,19 +33,34 @@
           <tbody>
             <tr>
               <th scope="row">Mailing de relance des cotisations partiellement payées</th>
-                <td><b>{{ nb_famille_avec_cotis_partiel }}</b> familles avec cotisation partiellement payée <br>au
-                    {{ date_jour }}</td>
+                <td>
+                    <b>{{ nb_famille_avec_cotis_partiel }}</b> familles avec cotisation partiellement payée
+                    <br>soit <b>{{ nb_adher_cotis_partiel }}</b> adhérents
+                    <br>au {{ date_jour }}</td>
                 <td><button type="submit" style="width: 100%; margin: auto;" class="btn btn-success me-3" name="lancerCotisPart" value="CotisPartielle">Lancer</button></td>
             </tr>
             <tr>
               <th scope="row">Mailing de relance des cotisations non payées</th>
-                <td><b>{{ nb_famille_sans_cotis_payee }}</b> familles sans aucune cotisation payée <br>au {{ date_jour }}</td>
-              <td><button type="submit" style="width: 100%; margin: auto;" class="btn btn-success me-3" name="lancerCotisNonPayee" value="CotisNonPayee">Lancer</button></td>
+                <td>
+                    <b>{{ nb_famille_sans_cotis_payee }}</b> familles sans aucune cotisation payée
+                    <br>soit <b>{{ nb_adher_sans_cotis }}</b> adhérents
+                    <br>au {{ date_jour }}
+                </td>
+                <td><button type="submit" style="width: 100%; margin: auto;" class="btn btn-success me-3" name="lancerCotisNonPayee" value="CotisNonPayee">Lancer</button></td>
             </tr>
             <tr>
               <th scope="row">Mailing de relance des certificats non reçus</th>
                 <td><b>{{ nb_certif_manquant }}</b> certificats manquants <br>au {{ date_jour }}</td>
 <!--                <td><button type="submit" style="width: 100%; margin: auto;" class="btn btn-success me-3" name="lancerCertifMed" value="CertifMed">Lancer</button></td>-->
+            </tr>
+            <tr>
+              <th scope="row">Mailing de réinscription pour la saison suivante <br> <span class="text-danger">!! à lancer en juin !!</span></th>
+                <td>
+                    <b>{{ nb_famille_reinscr_saison_suivante }}</b> familles (cotisation payée ou partiellement)
+                    <br>soit <b>{{ nb_adher_reinscr }}</b> adhérents
+                    <br>au {{ date_jour }}
+                </td>
+                <td><button type="submit" style="width: 100%; margin: auto;" class="btn btn-success me-3" name="lancerReinscript" value="Reinscript">Lancer</button></td>
             </tr>
           </tbody>
         </table>

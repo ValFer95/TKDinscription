@@ -68,7 +68,8 @@ def liste_dest_mail(list_email, age_adherent, email_adh, email_contact):
 
     if list_email != '':
         if age_adherent >= 18 and email_adh:
-            list_email = list_email + ',' + email_adh
+            if list_email.count(email_adh) == 0:
+                list_email = list_email + ',' + email_adh
         else:
             if list_email.count(email_contact) == 0:
                 list_email = list_email + ',' + email_contact
@@ -79,3 +80,12 @@ def liste_dest_mail(list_email, age_adherent, email_adh, email_contact):
             list_email = email_contact
 
     return list_email
+
+
+# attribution du code 1 ou 0 à maintenance car la page base.html n\'arrive pas à comparer des string !!!!  :(
+def code_maintenance(maintenance):
+    if str(maintenance) == 'True' : # pour mettre le site en maintenance
+        code_maintenance = 1
+    else :
+        code_maintenance = 0
+    return code_maintenance

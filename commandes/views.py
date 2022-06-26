@@ -1,20 +1,29 @@
 from django.shortcuts import render
 from commandes.forms import AuthentifForm
 from commandes.fonctions import authent, listing_adherents, statut_paiement_cotisation, commandes_passees, command_exist, envoi_mail
+from inscription.fonctions import code_maintenance
 from inscription.models import Saison, Adherent, Famille
 from commandes.models import CommandesDobok, PrixDobok
+from cotisation.models import Maintenance
 from django.db import transaction
 
 @transaction.atomic
 def commandes(request):
 
     saison_actuelle = Saison.objects.get(saison_actuelle=True)
+    maintenance = Maintenance.objects.get(maintenance='Maintenance')
+    # blocage de l'accès des pages pour empêcher les gens qui auraient gardé les url directes en historique ou en favori \
+    # d'accéder aux formulaires pendant la maintenace
+    if code_maintenance(maintenance) == 1:
+        print('retour à accueil')
+        page_html_suivante = 'accueil-maintenance.html'
+    else :
+        page_html_suivante = 'commandes/authentif.html'
 
     message_err = ''
     membres_famille = ''
     code_famille = ''
     statut_paiement = ''
-    page_html_suivante = "commandes/authentif.html"
     ### variables pour personnalisation de la page d'authentification et utilisation pour un autre besoin (accès privé staff)
     titre_pageHTML = 'Commandes'    # titre de la page HTML
     placeholderEmail = 'Votre adresse email'
@@ -48,6 +57,7 @@ def commandes(request):
     context = {
         'authentForm': authentForm,
         'saison_actuelle' : saison_actuelle,
+        'maintenance': code_maintenance(maintenance),
         'message': message_err,
         'code_famille': code_famille,
         'membres_famille': membres_famille,
@@ -63,6 +73,8 @@ def commandes(request):
 @transaction.atomic
 def fin_commandes(request):
     saison_actuelle = Saison.objects.get(saison_actuelle=True)
+    maintenance = Maintenance.objects.get(maintenance='Maintenance')
+
     id_mb = []  # récupère les id_adherent de ceux qui commandent un dobok
 
     code_famille = request.session['code_famille']
@@ -120,6 +132,7 @@ def fin_commandes(request):
 
     context = {
         'saison_actuelle': saison_actuelle,
+        'maintenance': code_maintenance(maintenance),
         'code_famille': code_famille,
         'email_auth': email_auth,
         'command_dobok' : command_dobok,

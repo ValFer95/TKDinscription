@@ -8,6 +8,13 @@ class Saison(models.Model):
     def __str__(self):
         return self.saison
 
+class Maintenance(models.Model):
+    maintenance = models.CharField(max_length=12, verbose_name="Maintenance")
+    maintenance_en_cours = models.BooleanField(default=False, verbose_name="Cocher la case pour passe en mode maintenance / Décocher pour retirer le mode maintenance")
+
+    def __str__(self):
+        return '{}'.format(self.maintenance_en_cours)
+
 
 class Categorie(models.Model):
     nom_catg = models.CharField(max_length=15, verbose_name="Catégorie")

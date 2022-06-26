@@ -39,6 +39,7 @@
                        {% if url_name == 'accueil' %} aria-current="page"{% endif %}
                         href="{% url 'accueil' %}">Accueil</a>
                   </li>
+                  {% if maintenance == 0 %}
                   <li class="nav-item">
                     <a class="nav-link {% if url_name == 'calcul_simul' %}active{% endif %}"
                        {% if url_name == 'accueil' %} aria-current="page"{% endif %}
@@ -54,6 +55,7 @@
                        {% if url_name == 'accueil' %} aria-current="page"{% endif %}
                        href="{% url 'commandes' %}">Commandes</a>
                   </li>
+                  {% endif %}
                   <li class="nav-item">
                     <a class="nav-link {% if url_name == 'sommaire_staff' %}active{% endif %}"
                        {% if url_name == 'accueil' %} aria-current="page"{% endif %}

@@ -1,15 +1,12 @@
 from django.db import connection
 from django.core.mail import send_mail
 from inscription.fonctions import calcul_age_adh, liste_dest_mail
+import datetime
 
 
 def calcul_nb_cotis_dues(niv_paiement):
 
-    requete = "SELECT DISTINCT ifa.id as id_famille, \
-                CASE WHEN ip.paye = 0 THEN 'Cotisation non réglée' \
-                  WHEN ip.paye = 1 THEN 'Cotisation partiellement réglée' \
-                ELSE 'Cotisation réglée' \
-                END AS Cotisation \
+    requete = "SELECT COUNT(DISTINCT ifa.id) as id_famille, COUNT(DISTINCT ia.id) as id_adh \
                 FROM inscription_adherent_saison ias \
                 JOIN inscription_adherent ia ON ia.id = ias.adherent_id \
                 JOIN cotisation_saison cs ON ias.saison_id = cs.id \
@@ -17,17 +14,13 @@ def calcul_nb_cotis_dues(niv_paiement):
                 JOIN inscription_paiement ip ON ip.famille_id = ifa.id \
                 JOIN inscription_contact ic ON ic.id = ia.contact_id \
                 WHERE cs.saison_actuelle = 1 \
-                AND ip.paye = " + str(niv_paiement) + " \
-                order by ifa.id"
+                AND ip.paye = " + str(niv_paiement)
 
     with connection.cursor() as cursor:
         cursor.execute(requete)
-        rows = cursor.fetchall()
-        # print("nb de lignes :" , len(rows))
-        # for row in rows:
-        #     print(row[0])
+        row = cursor.fetchone()
 
-    return len(rows)
+    return row[0], row[1]
 
 
 def info_famille_cotis_non_payee(niv_paiement):
@@ -79,7 +72,7 @@ def info_famille_cotis_non_payee(niv_paiement):
                 else:
                     email = liste_dest_mail('', calcul_age_adh(row[1].strftime("%d/%m/%Y"), 'reel'), row[6], row[6])
 
-                infos_famille.append([ [row[0]], [row[2]], row[4], email])
+                infos_famille.append([ [row[0]], [row[2]], row[4], email, row[3]])
                 id_famille_before = row[3]
                 i += 1
             else:       # pour ajouter le nom prénom de l'adhérent dans la ligne de la famille
@@ -103,6 +96,23 @@ def calcul_nb_certif_dus():
         row = cursor.fetchone()
 
     return row[0]
+
+
+def calcul_nb_reinscrip() :
+    requete = "SELECT COUNT(DISTINCT ifa.id) as id_famille, COUNT(DISTINCT ia.id) as id_adhr \
+                FROM inscription_adherent_saison ias \
+                JOIN inscription_adherent ia ON ia.id = ias.adherent_id \
+                JOIN cotisation_saison cs ON ias.saison_id = cs.id \
+                JOIN inscription_famille ifa ON ia.famille_id = ifa.id \
+                JOIN inscription_paiement ip ON ip.famille_id = ifa.id \
+                WHERE cs.saison_actuelle = 1 \
+                AND ip.paye IN (1,2)"
+
+    with connection.cursor() as cursor:
+        cursor.execute(requete)
+        row = cursor.fetchone()
+
+    return row[0], row[1]
 
 
 def message_Cotis(statut, infos_famille):
@@ -160,7 +170,91 @@ def message_Cotis(statut, infos_famille):
     return message, email, objet
 
 
-def envoi_mail(objet, message, email):
+def info_famille_reinscript():
+    infos_famille = []
+    requete = "SELECT ifa.id as id_famille, ifa.nom_famille as nom_famille, ia.ddn as ddn, ia.email_adh as 'mail adhérent', \
+                ic.email_contact as 'mail_contact'  \
+                FROM inscription_adherent_saison ias  \
+                JOIN inscription_adherent ia ON ia.id = ias.adherent_id  \
+                JOIN cotisation_saison cs ON ias.saison_id = cs.id  \
+                JOIN inscription_famille ifa ON ia.famille_id = ifa.id  \
+                JOIN inscription_paiement ip ON ip.famille_id = ifa.id  \
+				JOIN inscription_contact ic ON ic.id = ia.contact_id \
+                WHERE cs.saison_actuelle = 1  \
+                AND ip.paye IN (1,2) \
+				order by id_famille"
+
+    with connection.cursor() as cursor:
+        cursor.execute(requete)
+        rows = cursor.fetchall()
+        # row[0] -> id_famille, row[1] -> nom_famille,, row[2] -> ddn,
+        # row[3] -> mail adher, row[4] -> mail contact
+        id_famille_before = 0
+        i = 0  # incrément pour le tableau infos_famille
+        for row in rows:
+
+            if row[0] != id_famille_before:         # pour regrouper les adhérents d'une même famille
+
+                if row[3] is not None:
+                    email = liste_dest_mail('', calcul_age_adh(row[2].strftime("%d/%m/%Y"), 'reel'), row[3], row[4])
+                else:
+                    email = liste_dest_mail('', calcul_age_adh(row[2].strftime("%d/%m/%Y"), 'reel'), row[4], row[4])
+
+                id_famille_before = row[0]
+                infos_famille.append([ row[1], email, row[0]])
+
+            else:
+                if row[3] is not None:
+                    email = liste_dest_mail(email, calcul_age_adh(row[2].strftime("%d/%m/%Y"), 'reel'), row[3], row[4])
+                else:
+                    email = liste_dest_mail(email, calcul_age_adh(row[2].strftime("%d/%m/%Y"), 'reel'), row[4], row[4])
+
+                infos_famille[i - 1][1] = email
+
+    #print(infos_famille)
+    connection.close()
+    return infos_famille
+
+
+def message_reinscript(infos_famille):
+    date_jour = datetime.date.today()
+    objet = "Mudo Club Argenteuil - Réinscription saison - " + str(date_jour.year) + "-" + str(date_jour.year + 1)
+
+    # infos_famille[0] -> code_famille
+    # infos_famille[1] -> adresse email du destinataire
+
+    email = infos_famille[1]
+    #print ('email : ' + email)
+
+    message = 'Bonjour, \n \n'
+
+    message += "La réinscription au Mudo Club Argenteuil saison " + str(date_jour.year) + "-" + str(date_jour.year + 1) + " est ouverte ! \n"
+
+    message += "Nous maintenons l'application de 10% de réduction sur le montant de cotisation standard ancien adhérent (même tarif que la saison actuelle) en compensation de la situation COVID.\n\n"
+
+    message += "Pour vous réinscrire : \n\n"
+    message += "1-> rendez-vous sur la page https://tkdinscription.vfeapps.fr/q_inscription/ \n\n"
+    message += "2-> Vous aurez besoin de votre code famille : " + infos_famille[0] + " \n"
+    message += "Les formulaires sont préremplis avec vos données. Vérifiez que toutes les informations sont correctes et changez-les si besoin. N'oubliez pas d'indiquer le grade que vous avez obtenu cette année!"
+    message += "Le récapitulatif de la réinscription sera envoyé à l'adresse mail du contact pour les adhérents mineurs. "
+    message += "Si l'adhérent est majeur, le récapitulatif sera envoyé à l'adresse mail de l'adhérent si connue, sinon à l'adresse mail du contact. \n\n"
+
+    message += "3-> le paiement ne se fait pas en ligne. Une fois l'inscription réalisée, apportez une enveloppe fermée indiquant "
+    message += "votre nom et le code famille, et contenant le(s) certificat(s) médicaux et le moyen de paiement (chèque(s), espèces, "
+    message += "pass' sport). Si vous avez besoin d'une attestation CE, indiquez-le moi sur l'enveloppe. "
+    message += "L'enveloppe sera à déposer au gymnase du club aux horaires des entraînements. Elle sera récupérée par moi-même ou par les professeurs. \n\n"
+
+    message += "Vous pouvez télécharger le guide de réinscription à l'adresse https://www.mudoclubargenteuil.fr/2016/10/horaires-lieu.html. \n\n"
+
+    message += "Je vous souhaite de bonnes vacances d'été ! \n"
+    message += "Valérie du Mudo Club"
+
+    # print("message :" + message)
+
+    return message, email, objet
+
+
+def envoi_mail(objet, message, email, id_famille, nature_relance):
 
     addr_mail = email.split(',')
 
@@ -168,11 +262,18 @@ def envoi_mail(objet, message, email):
     # print('addr_mail:', addr_mail)
     # print('message :' + message)
 
-    send_mail(
+    result = send_mail(
         objet, # objet du mail
         message, # message
         'mudoclub@tkdinscription.vfeapps.fr', # from email (envoyeur)
         addr_mail, # to mail (destinataire),
         fail_silently = False
     )
+
+    # if result == 1 :
+    #     #print('id_famille : ' + str(id_famille) + ', email : ' + email + ' : OK')
+    #     # intégration dans la table relance de l'id famille, le purpose de la relonce et la date de la relance
+    # else:
+    #     #print('id_famille : ' + str(id_famille) + ', email : ' + email + ' : ERR')
+
     return 'ok'
