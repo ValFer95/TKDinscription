@@ -104,8 +104,8 @@ def calcul_nb_reinscrip() :
                 JOIN inscription_adherent ia ON ia.id = ias.adherent_id \
                 JOIN cotisation_saison cs ON ias.saison_id = cs.id \
                 JOIN inscription_famille ifa ON ia.famille_id = ifa.id \
-                JOIN inscription_paiement ip ON ip.famille_id = ifa.id \
-                WHERE cs.saison_actuelle = 1 \
+                JOIN inscription_paiement ip ON ip.famille_id = ifa.id AND ip.saison_id = cs.id \
+                WHERE cs.saison = '2021-2022' \
                 AND ip.paye IN (1,2)"
 
     with connection.cursor() as cursor:
@@ -115,7 +115,7 @@ def calcul_nb_reinscrip() :
     return row[0], row[1]
 
 
-def message_Cotis(statut, infos_famille):
+def message_Cotis(statut, infos_famille, saison_actuelle):
 
     objet = 'Mudo Club Argenteuil - Taekwondo - Relance cotisation'
 
@@ -149,7 +149,7 @@ def message_Cotis(statut, infos_famille):
                 else :
                     message += ', '
 
-    message += " au club de Taekwondo d'Argenteuil (MUDO Club) pour la saison 2021 - 2022. \n"
+    message += " au club de Taekwondo d'Argenteuil (MUDO Club) pour la saison " + str(saison_actuelle) + ". \n"
 
     if statut == 'CotisNonPayee':
         message += "A ce jour, la cotisation n'a pas encore été réglée.  \n\n"
@@ -178,9 +178,9 @@ def info_famille_reinscript():
                 JOIN inscription_adherent ia ON ia.id = ias.adherent_id  \
                 JOIN cotisation_saison cs ON ias.saison_id = cs.id  \
                 JOIN inscription_famille ifa ON ia.famille_id = ifa.id  \
-                JOIN inscription_paiement ip ON ip.famille_id = ifa.id  \
+                JOIN inscription_paiement ip ON ip.famille_id = ifa.id AND ip.saison_id = cs.id \
 				JOIN inscription_contact ic ON ic.id = ia.contact_id \
-                WHERE cs.saison_actuelle = 1  \
+                WHERE cs.saison = '2021-2022' \
                 AND ip.paye IN (1,2) \
 				order by id_famille"
 
@@ -211,7 +211,7 @@ def info_famille_reinscript():
 
                 infos_famille[i - 1][1] = email
 
-    #print(infos_famille)
+    # print(infos_famille)
     connection.close()
     return infos_famille
 
@@ -224,20 +224,18 @@ def message_reinscript(infos_famille):
     # infos_famille[1] -> adresse email du destinataire
 
     email = infos_famille[1]
-    #print ('email : ' + email)
+    # print ('email : ' + email)
 
     message = 'Bonjour, \n \n'
 
     message += "La réinscription au Mudo Club Argenteuil saison " + str(date_jour.year) + "-" + str(date_jour.year + 1) + " est ouverte ! \n"
-
-    message += "Nous maintenons l'application de 10% de réduction sur le montant de cotisation standard ancien adhérent (même tarif que la saison actuelle) en compensation de la situation COVID.\n\n"
 
     message += "Pour vous réinscrire : \n\n"
     message += "1-> rendez-vous sur la page https://tkdinscription.vfeapps.fr/q_inscription/ \n\n"
     message += "2-> Vous aurez besoin de votre code famille : " + infos_famille[0] + " \n"
     message += "Les formulaires sont préremplis avec vos données. Vérifiez que toutes les informations sont correctes et changez-les si besoin. N'oubliez pas d'indiquer le grade que vous avez obtenu cette année!"
     message += "Le récapitulatif de la réinscription sera envoyé à l'adresse mail du contact pour les adhérents mineurs. "
-    message += "Si l'adhérent est majeur, le récapitulatif sera envoyé à l'adresse mail de l'adhérent si connue, sinon à l'adresse mail du contact. \n\n"
+    message += "Si l'adhérent est majeur, le récapitulatif sera envoyé à l'adresse maeil de l'adhérent si connue, sinon à l'adresse mail du contact. \n\n"
 
     message += "3-> le paiement ne se fait pas en ligne. Une fois l'inscription réalisée, apportez une enveloppe fermée indiquant "
     message += "votre nom et le code famille, et contenant le(s) certificat(s) médicaux et le moyen de paiement (chèque(s), espèces, "
@@ -245,6 +243,9 @@ def message_reinscript(infos_famille):
     message += "L'enveloppe sera à déposer au gymnase du club aux horaires des entraînements. Elle sera récupérée par moi-même ou par les professeurs. \n\n"
 
     message += "Vous pouvez télécharger le guide de réinscription à l'adresse https://www.mudoclubargenteuil.fr/2016/10/horaires-lieu.html. \n\n"
+
+    message += "A noter qu'après une saison sans interruption des cours dans la salle du gymnase, les tarifs reviennent aux tarifs avant période covid. \n"
+    message += "L'application des 10% de réduction en compensation de la situation COVID est donc supprimée.\n\n"
 
     message += "Je vous souhaite de bonnes vacances d'été ! \n"
     message += "Valérie du Mudo Club"

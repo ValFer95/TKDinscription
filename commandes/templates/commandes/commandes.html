@@ -17,9 +17,9 @@
             <div class="alert alert-danger text-center">
               <strong> Information :
                   {% if statut_paiement == '0' %}
-                        vous n'avez pas réglé la cotisation 2021-2022.
+                        vous n'avez pas réglé la cotisation {{ saison_actuelle }}.
                   {% elif statut_paiement ==  '1' %}
-                        vous n'avez pas entièrement réglé la cotisation 2021-2022.
+                        vous n'avez pas entièrement réglé la cotisation {{ saison_actuelle }}.
                   {% endif %}
                   Vous pouvez passer commande dès à présent mais vous ne serez pas prioritaire lors de la distribution.
               </strong>

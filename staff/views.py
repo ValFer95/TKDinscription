@@ -89,13 +89,13 @@ def relances(request):
     if "lancerCotisPart" in request.POST :
         infos_famille = info_famille_cotis_non_payee(1)
         for i in range(len(infos_famille)):
-            message, email, objet = message_Cotis("CotisPart", infos_famille[i])
+            message, email, objet = message_Cotis("CotisPart", infos_famille[i], saison_actuelle)
             envoi_mail(objet, message, email, infos_famille[i][4], 'CotisPartPayee')
         message_post_relance = 'Mails de relance des cotisations partiellement dues envoyés !'
     elif "lancerCotisNonPayee" in request.POST :
         infos_famille = info_famille_cotis_non_payee(0)
         for i in range(len(infos_famille)):
-            message, email, objet = message_Cotis("CotisNonPayee", infos_famille[i])
+            message, email, objet = message_Cotis("CotisNonPayee", infos_famille[i], saison_actuelle)
             envoi_mail(objet, message, email, infos_famille[i][4], 'CotisNonPayee')
         message_post_relance = 'Mails de relance des cotisations entièrement dues envoyés !'
     elif "lancerReinscript" in request.POST:

@@ -33,8 +33,8 @@ def calcul_age_adh(ddn, besoin):
     return age_adherent
 
 
-def envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famille, email):
-    message = "Bonjour, \n Votre demande d'inscription au Mudo club Argenteuil pour la saison 2021-2022 est prise en compte : \n \n"
+def envoi_mail(list_nom, list_discipline, list_cotisation, cotis_adh, code_famille, email, saison_actuelle):
+    message = "Bonjour, \n Votre demande d'inscription au Mudo club Argenteuil pour la saison " + str(saison_actuelle) + " est prise en compte : \n \n"
     for i in range(len(list_nom)):
         message += str(i+1) + '- ' + list_nom[i] + ' (' + list_discipline[i] + ') - tarif de :' + list_cotisation[i] + '€\n'
 
